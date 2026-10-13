@@ -1,0 +1,22 @@
+Nitro Wakeword foundation
+
+Adapted from react-native-nitro-wakeword
+Copyright (c) 2026 FerRivera
+Source: https://github.com/FerRiv3ra/react-native-nitro-wakeword
+Commit: 321ec6a5f905ad0c8148213564ae62949653b8b3
+Licensed under the MIT License (see LICENSE).
+
+The audio feature pipeline follows openWakeWord's mel-spectrogram,
+speech-embedding, and keyword-classifier architecture.
+https://github.com/dscripka/openWakeWord
+
+No upstream model binaries are included. Pretrained model licenses differ
+from source-code licenses. See docs/PROVENANCE.md before acquiring or
+redistributing any model.
+
+Native dependencies:
+ONNX Runtime, Copyright (c) Microsoft Corporation, MIT License.
+Nitro Modules, Copyright (c) Marc Rousavy, MIT License.
+
+The upstream MIT copyright/license notice is retained. Changes made for this
+standalone port are described in docs/PROVENANCE.md and Git history.

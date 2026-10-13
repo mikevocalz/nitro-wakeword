@@ -1,0 +1,66 @@
+name: Native host builds
+
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'ios/**'
+      - 'src/**'
+      - 'nitrogen/**'
+      - '*.podspec'
+      - 'package*.json'
+      - 'tests/native-host/**'
+      - 'scripts/build-native-host.sh'
+      - '.github/workflows/native-host.yml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-host-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.platform }} compile and link
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            runner: ubuntu-24.04
+          - platform: ios
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tests/native-host/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm ci --ignore-scripts --prefix tests/native-host
+      - run: scripts/build-native-host.sh "${{ matrix.platform }}"
+        env:
+          NITRO_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NITRO_BUILD_LOGS: ${{ runner.temp }}/nitro-host-logs
+      - name: Preserve build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-host-${{ matrix.platform }}-logs
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/nitro-host-logs/*.log
+            ${{ runner.temp }}/nitro-host-logs/autolinking.json
+            ${{ runner.temp }}/nitro-host-logs/Podfile.lock
