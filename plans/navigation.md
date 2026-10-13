@@ -19,3 +19,16 @@ intent
 - Typecheck, lint, tests, codegen and relevant native builds pass.
 - No proprietary DaVoice/Alan AI code or model assets copied.
 - Do not merge until implementation and verification.
+
+## Current bounded slice
+
+Implemented on top of the merged typed intent router: separate optional Expo
+Router and bare React Navigation adapters for static app-owned destinations.
+Route authorization defaults to deny; confirmation is scoped to the exact target,
+permissions are checked again at execution, and app session generations invalidate
+stale commands. External URLs, traversal, and unsupported parameters are rejected.
+See `docs/NAVIGATION.md` for the API, lifecycle contract, and tested peer versions.
+
+Tests exercise the real React Navigation TabRouter plus Expo's typed call boundary.
+A rendered Expo app and a real microphone-to-Home device journey remain outstanding.
+This slice does not satisfy those original device acceptance criteria.

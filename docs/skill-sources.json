@@ -1,0 +1,217 @@
+{
+  "reviewedAt": "2026-10-12T18:57:00Z",
+  "scope": "Read-only upstream documentation review for Nitro Wakeword",
+  "notes": [
+    "No upstream scripts, installers, CLI tools, or devices were run.",
+    "Cursor deslop is the verified official engineering deslop source. A historical revision was not established; this registry pins the current official source.",
+    "callstack/agent-device is the verified canonical repository; Argent/agent-device must not be labeled verified."
+  ],
+  "sources": [
+    {
+      "repository": "cursor/plugins",
+      "commit": "997ffc7fe26bdaa6478a14e7f5b8d5f9ed747102",
+      "path": "cursor-team-kit/skills/deslop/SKILL.md",
+      "blobSha": "1b3827c7f991182149a7abda696af43ff8f17a12",
+      "url": "https://github.com/cursor/plugins/blob/997ffc7fe26bdaa6478a14e7f5b8d5f9ed747102/cursor-team-kit/skills/deslop/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "petergyang/no-ai-slop",
+      "commit": "000650b156983f5159695b441477f4e63b25dc85",
+      "path": "skills/no-ai-slop/SKILL.md",
+      "blobSha": "e2008aa08d688846b0373b83d7c3d33b85eaabdd",
+      "url": "https://github.com/petergyang/no-ai-slop/blob/000650b156983f5159695b441477f4e63b25dc85/skills/no-ai-slop/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "petergyang/no-ai-slop",
+      "commit": "000650b156983f5159695b441477f4e63b25dc85",
+      "path": "skills/no-ai-slop/eval.md",
+      "blobSha": "e912b3e9246ded24b14116682c23702a4d083dc7",
+      "url": "https://github.com/petergyang/no-ai-slop/blob/000650b156983f5159695b441477f4e63b25dc85/skills/no-ai-slop/eval.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "gg-mo/repo-hygiene",
+      "commit": "09f480d16ef061fc6559e4e66c1f6a3782b631f0",
+      "path": "skills/cleaning-existing-codebase/SKILL.md",
+      "blobSha": "fb45983088ff4257783f433bab8eb28e1c2980c5",
+      "url": "https://github.com/gg-mo/repo-hygiene/blob/09f480d16ef061fc6559e4e66c1f6a3782b631f0/skills/cleaning-existing-codebase/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "morluto/rea",
+      "commit": "bb266226707135ad9f181e6c3afd6af0ef62fb22",
+      "path": ".agents/skills/reverse-engineer-anything/SKILL.md",
+      "blobSha": "fc6237dcd1b9cdac4fcb6658eecd3833e3975f8a",
+      "url": "https://github.com/morluto/rea/blob/bb266226707135ad9f181e6c3afd6af0ef62fb22/.agents/skills/reverse-engineer-anything/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "mattpocock/skills",
+      "commit": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/code-review/SKILL.md",
+      "blobSha": "373a4f26e6cfa3617778397945bb069d9cb184bc",
+      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/code-review/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "mattpocock/skills",
+      "commit": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/tdd/SKILL.md",
+      "blobSha": "01eadaa34e7c9a63a67d6dc3cce1cc81b0e49985",
+      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/tdd/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "mattpocock/skills",
+      "commit": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/tdd/tests.md",
+      "blobSha": "7ab86479f925a1f9e8ba680af33cb3b12e015381",
+      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/tdd/tests.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "mattpocock/skills",
+      "commit": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/tdd/mocking.md",
+      "blobSha": "71cbfee674d93244ce81d1830b930ca9a69200bd",
+      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/tdd/mocking.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "callstack/agent-device",
+      "commit": "aa1b08ca4dbaf45354c7a5741bcfeef2a0c8e6da",
+      "path": "skills/agent-device/SKILL.md",
+      "blobSha": "a2447b3ed5fbe963372793403889e276d0ebdb9e",
+      "url": "https://github.com/callstack/agent-device/blob/aa1b08ca4dbaf45354c7a5741bcfeef2a0c8e6da/skills/agent-device/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "callstack/agent-device",
+      "commit": "aa1b08ca4dbaf45354c7a5741bcfeef2a0c8e6da",
+      "path": "skills/ios-simulator/SKILL.md",
+      "blobSha": "2a77984154cdbbb63eb8eb7fad66486e73586216",
+      "url": "https://github.com/callstack/agent-device/blob/aa1b08ca4dbaf45354c7a5741bcfeef2a0c8e6da/skills/ios-simulator/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "callstack/agent-device",
+      "commit": "aa1b08ca4dbaf45354c7a5741bcfeef2a0c8e6da",
+      "path": "skills/android-emulator/SKILL.md",
+      "blobSha": "59d4b54f32d4c2b3392f1b66ab7463f349448e07",
+      "url": "https://github.com/callstack/agent-device/blob/aa1b08ca4dbaf45354c7a5741bcfeef2a0c8e6da/skills/android-emulator/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "pbakaus/impeccable",
+      "commit": "245ad82def45831dc56a21b683c7a1ff530b06cc",
+      "path": ".agents/skills/impeccable/SKILL.md",
+      "blobSha": "b9d82965dd59a45596c5b63a1cf4207168a272a7",
+      "url": "https://github.com/pbakaus/impeccable/blob/245ad82def45831dc56a21b683c7a1ff530b06cc/.agents/skills/impeccable/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "pbakaus/impeccable",
+      "commit": "245ad82def45831dc56a21b683c7a1ff530b06cc",
+      "path": ".agents/skills/impeccable/reference/audit.native.md",
+      "blobSha": "321847a79680fd61908fced1ddab0ac20581aeb7",
+      "url": "https://github.com/pbakaus/impeccable/blob/245ad82def45831dc56a21b683c7a1ff530b06cc/.agents/skills/impeccable/reference/audit.native.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/api-design/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/build-nitro-modules/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/swift/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/swift/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/kotlin/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/kotlin/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/cpp/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "expo/skills",
+      "commit": "d4f484024fec15196bfd3c272e953e3f983972cf",
+      "path": "plugins/expo/skills/expo-dev-client/SKILL.md",
+      "url": "https://github.com/expo/skills/blob/d4f484024fec15196bfd3c272e953e3f983972cf/plugins/expo/skills/expo-dev-client/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "expo/skills",
+      "commit": "d4f484024fec15196bfd3c272e953e3f983972cf",
+      "path": "plugins/expo/skills/expo-native-ui/SKILL.md",
+      "url": "https://github.com/expo/skills/blob/d4f484024fec15196bfd3c272e953e3f983972cf/plugins/expo/skills/expo-native-ui/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "expo/skills",
+      "commit": "d4f484024fec15196bfd3c272e953e3f983972cf",
+      "path": "plugins/expo/skills/expo-router/SKILL.md",
+      "url": "https://github.com/expo/skills/blob/d4f484024fec15196bfd3c272e953e3f983972cf/plugins/expo/skills/expo-router/SKILL.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "expo/skills",
+      "commit": "d4f484024fec15196bfd3c272e953e3f983972cf",
+      "path": "plugins/expo/skills/expo-router/references/route-structure.md",
+      "url": "https://github.com/expo/skills/blob/d4f484024fec15196bfd3c272e953e3f983972cf/plugins/expo/skills/expo-router/references/route-structure.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    },
+    {
+      "repository": "expo/skills",
+      "commit": "d4f484024fec15196bfd3c272e953e3f983972cf",
+      "path": "plugins/expo/skills/expo-router/references/tabs.md",
+      "url": "https://github.com/expo/skills/blob/d4f484024fec15196bfd3c272e953e3f983972cf/plugins/expo/skills/expo-router/references/tabs.md",
+      "reviewStatus": "documentation-read",
+      "executed": false
+    }
+  ]
+}
