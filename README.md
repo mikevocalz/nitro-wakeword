@@ -15,8 +15,9 @@ included. “Hey Deca” is a configurable example phrase, not a built-in classi
 The initial slice covers independent sessions, native lifecycle ownership,
 input validation, model loading, and Expo configuration. A
 [typed local command router](docs/COMMANDS.md) matches app-supplied transcripts
-and gates app-owned handlers. STT, TTS, speaker verification, navigation
-adapters, Q&A, dialogue, and example UI remain separate planned work. Optional ExecuTorch reasoning is not a dependency of this package.
+and gates app-owned handlers. Optional [static navigation adapters](docs/NAVIGATION.md)
+connect authorized commands to Expo Router or React Navigation. STT, TTS, speaker
+verification, Q&A, dialogue, and example UI remain separate planned work. Optional ExecuTorch reasoning is not a dependency of this package.
 See [the dependency review](docs/PLAN_REVIEW.md).
 
 ## Models and permissions

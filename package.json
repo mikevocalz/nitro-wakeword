@@ -17,6 +17,16 @@
       "source": "./src/commands/index.ts",
       "types": "./lib/typescript/src/commands/index.d.ts",
       "default": "./lib/module/commands/index.js"
+    },
+    "./navigation/expo": {
+      "source": "./src/navigation/expo.ts",
+      "types": "./lib/typescript/src/navigation/expo.d.ts",
+      "default": "./lib/module/navigation/expo.js"
+    },
+    "./navigation/react-navigation": {
+      "source": "./src/navigation/reactNavigation.ts",
+      "types": "./lib/typescript/src/navigation/reactNavigation.d.ts",
+      "default": "./lib/module/navigation/reactNavigation.js"
     }
   },
   "files": [
@@ -84,7 +94,10 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-nitro-modules": "0.37.x"
+    "react-native-nitro-modules": "0.37.x",
+    "expo-router": "57.x",
+    "@react-navigation/native": "7.x",
+    "@react-navigation/routers": "7.x"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.1",
@@ -93,21 +106,25 @@
     "@expo/config-plugins": "57.0.10",
     "@react-native/babel-preset": "0.87.1",
     "@react-native/eslint-config": "0.87.1",
+    "@react-navigation/native": "7.5.0",
+    "@react-navigation/routers": "7.6.4",
     "@types/jest": "30.0.0",
     "@types/react": "~19.2.10",
+    "babel-jest": "30.5.2",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-ft-flow": "^3.0.11",
     "eslint-plugin-prettier": "^5.5.6",
+    "expo-router": "57.0.26",
     "jest": "30.5.2",
     "nitrogen": "0.37.1",
     "prettier": "^3.8.3",
     "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-native": "0.87.1",
     "react-native-builder-bob": "0.43.2",
     "react-native-nitro-modules": "0.37.1",
-    "typescript": "5.9.3",
-    "babel-jest": "30.5.2"
+    "typescript": "5.9.3"
   },
   "react-native-builder-bob": {
     "source": "src",
@@ -152,7 +169,10 @@
     "testEnvironment": "node",
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest"
-    }
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!@react-navigation/routers/)"
+    ]
   },
   "prettier": {
     "arrowParens": "avoid",
@@ -161,5 +181,16 @@
     "singleQuote": true,
     "trailingComma": "all"
   },
-  "private": true
+  "private": true,
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    },
+    "@react-navigation/native": {
+      "optional": true
+    },
+    "@react-navigation/routers": {
+      "optional": true
+    }
+  }
 }
