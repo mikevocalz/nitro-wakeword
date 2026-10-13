@@ -141,7 +141,8 @@ downloads models, or publishes the package.
 
 See [AGENTS.md](AGENTS.md) for source-verified review skills and
 [VERIFICATION.md](docs/VERIFICATION.md) for exact test coverage and remaining
-native/device gates.
+native/device gates. [Audio/VAD checks](docs/AUDIO_VALIDATION.md) cover the native
+framing, speech-history and capture recovery slice in PR #3.
 
 ## License
 

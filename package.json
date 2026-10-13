@@ -44,6 +44,8 @@
     "nitrogen": "nitrogen",
     "plugin:check": "node -e \"require('@expo/config-plugins/build/utils/plugin-resolver').resolveConfigPluginFunction(process.cwd(), 'nitro-wakeword')\"",
     "test": "jest --runInBand",
+    "test:native:kotlin": "bash scripts/test-kotlin-audio.sh",
+    "test:native:swift": "bash scripts/test-swift-audio.sh",
     "typecheck": "tsc --noEmit",
     "prepack": "bob build"
   },
