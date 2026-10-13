@@ -64,6 +64,46 @@ func runAudioConversionChecks() throws {
     try expect(zip(samples, expected).allSatisfy { abs($0 - $1) < 0.001 }, "Samples were dropped, replayed, reordered or rescaled")
   }
 
+  try test("resampling preserves output across irregular input boundaries") {
+    let input = try syntheticPCM(sampleRate: 48000, channels: 2, frames: 96000)
+    let whole = try AudioChunkStream(chunkSize: 1280)
+    let split = try AudioChunkStream(chunkSize: 1280)
+    var expected: [Float] = []
+    var actual: [Float] = []
+    try whole.process(input) { expected.append(contentsOf: $0) }
+    let sizes = [73, 4096, 127, 3000, 512]
+    var offset: AVAudioFrameCount = 0
+    var part = 0
+    while offset < input.frameLength {
+      let count = min(AVAudioFrameCount(sizes[part % sizes.count]), input.frameLength - offset)
+      guard let chunk = input.ownedCopy(fromFrame: offset, frameCount: count) else {
+        throw WakeWordError("Cannot slice streaming fixture")
+      }
+      try split.process(chunk) { actual.append(contentsOf: $0) }
+      offset += count
+      part += 1
+    }
+    try expect(actual.count == expected.count, "Input boundaries changed output count: \(actual.count) vs \(expected.count)")
+    try expect(zip(actual, expected).allSatisfy { abs($0 - $1) < 0.01 }, "Input boundaries dropped, duplicated or reordered samples")
+  }
+
+  try test("PCM input slices preserve channel offsets and ownership") {
+    let input = try syntheticPCM(sampleRate: 48000, channels: 2, frames: 100)
+    guard let original = input.floatChannelData else { throw WakeWordError("Missing fixture channels") }
+    for index in 0..<100 {
+      original[0][index] = Float(index)
+      original[1][index] = Float(index + 100)
+    }
+    guard let slice = input.ownedCopy(fromFrame: 17, frameCount: 41),
+          let copied = slice.floatChannelData else { throw WakeWordError("Slice failed") }
+    try expect(slice.frameLength == 41, "Slice returned wrong frame count")
+    try expect((0..<41).allSatisfy { copied[0][$0] == Float($0 + 17) && copied[1][$0] == Float($0 + 117) }, "Channel slice changed samples")
+    original[0][17] = -1
+    try expect(copied[0][0] == 17, "Slice aliases input")
+    try expect(input.ownedCopy(fromFrame: 99, frameCount: 2) == nil, "Out-of-range slice accepted")
+    try expect(input.ownedCopy(fromFrame: 101, frameCount: 1) == nil, "Offset beyond buffer accepted")
+  }
+
   try test("AVAudioPCMBuffer handoff copies borrowed samples") {
     let input = try syntheticPCM(sampleRate: 16000, channels: 2, frames: 1280)
     guard let copy = input.ownedCopy(), let original = input.floatChannelData,

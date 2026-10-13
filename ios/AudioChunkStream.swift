@@ -42,24 +42,41 @@ final class AudioChunkStream {
           let output = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: AVAudioFrameCount(capacity)) else {
       throw WakeWordError("Cannot allocate converted microphone buffer")
     }
-    var consumed = false
-    var error: NSError?
-    let status = converter.convert(to: output, error: &error) { _, outStatus in
-      guard !consumed else {
-        outStatus.pointee = .noDataNow
-        return nil
+    var offset: AVAudioFrameCount = 0
+    var status: AVAudioConverterOutputStatus
+    repeat {
+      var error: NSError?
+      var inputCopyFailed = false
+      output.frameLength = 0
+      status = converter.convert(to: output, error: &error) { requested, outStatus in
+        let count = min(requested, buffer.frameLength - offset)
+        guard count > 0 else {
+          outStatus.pointee = .noDataNow
+          return nil
+        }
+        guard let input = buffer.ownedCopy(fromFrame: offset, frameCount: count) else {
+          inputCopyFailed = true
+          outStatus.pointee = .noDataNow
+          return nil
+        }
+        offset += count
+        outStatus.pointee = .haveData
+        return input
       }
-      consumed = true
-      outStatus.pointee = .haveData
-      return buffer
-    }
-    guard status != .error else {
-      throw WakeWordError("Audio conversion failed: \(error?.localizedDescription ?? "unknown")")
-    }
-    guard let channel = output.floatChannelData?[0] else { return }
-    let samples = (0..<Int(output.frameLength)).map { index -> Float in
-      return WakeWordAudioFormat.int16ScaledSample(channel[index])
-    }
-    frames.append(samples, onFrame: onChunk)
+      guard !inputCopyFailed else { throw WakeWordError("Cannot copy converter input frames") }
+      guard status != .error else {
+        throw WakeWordError("Audio conversion failed: \(error?.localizedDescription ?? "unknown")")
+      }
+      guard status != .haveData || output.frameLength > 0 else {
+        throw WakeWordError("Audio converter produced no frames while reporting available data")
+      }
+      guard let channel = output.floatChannelData?[0] else {
+        throw WakeWordError("Converted microphone buffer has no float channel")
+      }
+      let samples = (0..<Int(output.frameLength)).map { index in
+        WakeWordAudioFormat.int16ScaledSample(channel[index])
+      }
+      frames.append(samples, onFrame: onChunk)
+    } while status == .haveData
   }
 }
