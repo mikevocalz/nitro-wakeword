@@ -13,7 +13,6 @@ swiftc -swift-version 5 \
   ios/WakeWordAudioFormat.swift ios/MicrophoneOwnership.swift \
   "${platform_sources[@]}" tests/native/swift/main.swift \
   -o "$output/native-audio-tests"
-"$output/native-audio-tests"
 if [[ "$(uname -s)" == Darwin ]]; then
   xcrun swiftc -swift-version 5 \
     -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
@@ -23,3 +22,4 @@ if [[ "$(uname -s)" == Darwin ]]; then
     ios/PcmFrameAccumulator.swift ios/MicrophoneOwnership.swift \
     ios/AVAudioPCMBuffer+ownedCopy.swift ios/AudioChunkStream.swift ios/AudioCapture.swift
 fi
+"$output/native-audio-tests"
