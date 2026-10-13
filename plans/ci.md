@@ -6,6 +6,15 @@ CI for Nitro codegen, TypeScript, native builds, license/SBOM, device test proto
 ## Dependencies
 foundation,audio-vad,stt,tts,ux
 
+## Current slice
+
+The draft adds a bare React Native host and CI compile/link gates for Android
+arm64 and the iOS arm64 simulator. It consumes the real local Nitro package,
+generated bindings and ONNX dependencies. Earlier helper tests remain separate.
+Exact-head native results are required before declaring the gates passed.
+Simulator execution, physical audio, Expo prebuild, model accuracy, SBOM/license
+review and performance measurements remain open.
+
 ## Implementation
 - Define documented public TypeScript interfaces and Nitro boundaries where needed.
 - Implement actual functionality, lifecycle and explicit errors, not no-op placeholders.
