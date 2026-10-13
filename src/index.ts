@@ -5,3 +5,4 @@ export type {WakeWordModel} from './WakeWordModel';
 export type {WakeWordSession} from './WakeWordSession';
 export type {WakeWordAsset} from './WakeWordAsset';
 export type {WakeWordBaseModels} from './WakeWordBaseModels';
+export * from './commands';

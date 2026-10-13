@@ -1,8 +1,9 @@
 # Nitro Wakeword
 
 A standalone React Native Nitro package for app-supplied ONNX wake-word models.
-This is a draft foundation port. It has not been validated on iOS or Android
-devices and is not published to npm.
+This is a draft package. Native Android and iOS simulator builds pass in the
+[documented test fixture](docs/NATIVE_HOST_BUILDS.md); physical-device behavior
+is unverified, and the package is not published to npm.
 
 The native source implements microphone capture, a shared mel/embedding pipeline
 per session, multiple keyword classifiers, and an optional Silero VAD gate.
@@ -12,9 +13,10 @@ included. “Hey Deca” is a configurable example phrase, not a built-in classi
 ## Scope
 
 The initial slice covers independent sessions, native lifecycle ownership,
-input validation, model loading, and Expo configuration. STT, TTS, speaker
-verification, typed app actions, Q&A, dialogue, and example UI remain separate
-planned work. Optional ExecuTorch reasoning is not a dependency of this package.
+input validation, model loading, and Expo configuration. A
+[typed local command router](docs/COMMANDS.md) matches app-supplied transcripts
+and gates app-owned handlers. STT, TTS, speaker verification, navigation
+adapters, Q&A, dialogue, and example UI remain separate planned work. Optional ExecuTorch reasoning is not a dependency of this package.
 See [the dependency review](docs/PLAN_REVIEW.md).
 
 ## Models and permissions
