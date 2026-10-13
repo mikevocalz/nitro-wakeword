@@ -1,0 +1,159 @@
+{
+  "name": "nitro-wakeword",
+  "version": "0.1.0-dev.0",
+  "description": "Draft standalone React Native Nitro wake-word engine with app-supplied ONNX models.",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json",
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js"
+  },
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "nitrogen",
+    "nitro.json",
+    "*.podspec",
+    "app.plugin.js",
+    "NOTICE",
+    "!ios/build",
+    "!android/build",
+    "!android/.cxx",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*",
+    "LICENSE",
+    "docs/PROVENANCE.md"
+  ],
+  "scripts": {
+    "build": "bob build",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "nitrogen": "nitrogen",
+    "plugin:check": "node -e \"require('@expo/config-plugins/build/utils/plugin-resolver').resolveConfigPluginFunction(process.cwd(), 'nitro-wakeword')\"",
+    "test": "jest --runInBand",
+    "test:native:kotlin": "bash scripts/test-kotlin-audio.sh",
+    "test:native:swift": "bash scripts/test-swift-audio.sh",
+    "typecheck": "tsc --noEmit",
+    "prepack": "bob build"
+  },
+  "keywords": [
+    "react-native",
+    "wake-word",
+    "wakeword",
+    "hotword",
+    "keyword-spotting",
+    "openwakeword",
+    "onnx",
+    "onnxruntime",
+    "nitro",
+    "nitro-modules",
+    "speech",
+    "voice",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikevocalz/nitro-wakeword.git"
+  },
+  "author": "FerRivera <fernando@softvize-premier.com> (https://feriv3ra.netlify.app)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikevocalz/nitro-wakeword/issues"
+  },
+  "homepage": "https://github.com/mikevocalz/nitro-wakeword#readme",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": "0.37.x"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^2.1.1",
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^9.39.0",
+    "@expo/config-plugins": "57.0.10",
+    "@react-native/babel-preset": "0.87.1",
+    "@react-native/eslint-config": "0.87.1",
+    "@types/jest": "30.0.0",
+    "@types/react": "~19.2.10",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-ft-flow": "^3.0.11",
+    "eslint-plugin-prettier": "^5.5.6",
+    "jest": "30.5.2",
+    "nitrogen": "0.37.1",
+    "prettier": "^3.8.3",
+    "react": "19.2.3",
+    "react-native": "0.87.1",
+    "react-native-builder-bob": "0.43.2",
+    "react-native-nitro-modules": "0.37.1",
+    "typescript": "5.9.3",
+    "babel-jest": "30.5.2"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "custom",
+        {
+          "script": "nitrogen",
+          "clean": "nitrogen/"
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "create-react-native-library": {
+    "languages": "kotlin-swift",
+    "type": "nitro-module"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.test.[jt]s?(x)"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.[jt]sx?$": "babel-jest"
+    }
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSameLine": true,
+    "bracketSpacing": false,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "private": true
+}
