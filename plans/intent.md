@@ -6,6 +6,17 @@ Deterministic registry with typed schemas, slot extraction, confidence/ambiguity
 ## Dependencies
 stt
 
+## Current implementation slice
+
+The local TypeScript router accepts app-supplied transcript text. It implements
+bounded literal/typed-slot patterns, unknown and ambiguous results, immutable
+one-shot candidates, default-deny authorization, per-invocation confirmation,
+expiry and session cancellation. It never evaluates generated code or executes
+arbitrary routes. See `docs/COMMANDS.md` for the supported grammar and limits.
+
+STT integration and physical voice-to-action validation remain open. The
+`nitro-wakeword/commands` entry works without loading a native module.
+
 ## Deliverables
 - Implementation and tests, not a placeholder API
 - Updated README/JSDoc and compatibility notes

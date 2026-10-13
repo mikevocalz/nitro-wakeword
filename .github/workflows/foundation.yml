@@ -30,6 +30,7 @@ jobs:
       - run: npm test
       - run: npm run plugin:check
       - run: npm run build
+      - run: node scripts/check-command-package.js
       - name: Verify generated bindings
         run: |
           git diff --exit-code -- nitrogen/

@@ -12,7 +12,12 @@
     },
     "./package.json": "./package.json",
     "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js"
+    "./app.plugin.js": "./app.plugin.js",
+    "./commands": {
+      "source": "./src/commands/index.ts",
+      "types": "./lib/typescript/src/commands/index.d.ts",
+      "default": "./lib/module/commands/index.js"
+    }
   },
   "files": [
     "src",
