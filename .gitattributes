@@ -1,0 +1,2 @@
+# Nitrogen emits trailing spaces on generated blank lines. Keep its output exact.
+nitrogen/generated/** -whitespace
