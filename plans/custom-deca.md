@@ -6,6 +6,14 @@ Document licensed training pipeline, dataset consent, phonetic variants, noisy s
 ## Dependencies
 foundation,audio-vad
 
+## Implementation status
+
+Local base-model paths, optional native SHA-256 verification, per-keyword
+refractory intervals, and a local manifest verification tool are implemented in
+this slice. See [custom model loading](../docs/CUSTOM_MODELS.md).
+Training, downloads, recorded evaluation and device accuracy are still open;
+there is no trained Hey Deca model or measured detection claim here.
+
 ## Deliverables
 - Implementation and tests, not a placeholder API
 - Updated README/JSDoc and compatibility notes

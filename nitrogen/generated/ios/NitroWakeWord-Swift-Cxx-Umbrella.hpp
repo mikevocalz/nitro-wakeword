@@ -10,6 +10,10 @@
 // Forward declarations of C++ defined types
 // Forward declaration of `HybridWakeWordSpec` to properly resolve imports.
 namespace margelo::nitro::wakeword { class HybridWakeWordSpec; }
+// Forward declaration of `WakeWordAsset` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordAsset; }
+// Forward declaration of `WakeWordBaseModels` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordBaseModels; }
 // Forward declaration of `WakeWordConfig` to properly resolve imports.
 namespace margelo::nitro::wakeword { struct WakeWordConfig; }
 // Forward declaration of `WakeWordDetection` to properly resolve imports.
@@ -19,6 +23,8 @@ namespace margelo::nitro::wakeword { struct WakeWordModel; }
 
 // Include C++ defined types
 #include "HybridWakeWordSpec.hpp"
+#include "WakeWordAsset.hpp"
+#include "WakeWordBaseModels.hpp"
 #include "WakeWordConfig.hpp"
 #include "WakeWordDetection.hpp"
 #include "WakeWordModel.hpp"

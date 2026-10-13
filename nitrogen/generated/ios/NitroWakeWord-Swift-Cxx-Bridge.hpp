@@ -10,6 +10,10 @@
 // Forward declarations of C++ defined types
 // Forward declaration of `HybridWakeWordSpec` to properly resolve imports.
 namespace margelo::nitro::wakeword { class HybridWakeWordSpec; }
+// Forward declaration of `WakeWordAsset` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordAsset; }
+// Forward declaration of `WakeWordBaseModels` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordBaseModels; }
 // Forward declaration of `WakeWordDetection` to properly resolve imports.
 namespace margelo::nitro::wakeword { struct WakeWordDetection; }
 // Forward declaration of `WakeWordModel` to properly resolve imports.
@@ -21,6 +25,8 @@ namespace NitroWakeWord { class HybridWakeWordSpec_cxx; }
 
 // Include C++ defined types
 #include "HybridWakeWordSpec.hpp"
+#include "WakeWordAsset.hpp"
+#include "WakeWordBaseModels.hpp"
 #include "WakeWordDetection.hpp"
 #include "WakeWordModel.hpp"
 #include <NitroModules/Promise.hpp>
@@ -134,6 +140,36 @@ namespace margelo::nitro::wakeword::bridge::swift {
     std::vector<WakeWordModel> vector;
     vector.reserve(size);
     return vector;
+  }
+  
+  // pragma MARK: std::optional<WakeWordAsset>
+  /**
+   * Specialized version of `std::optional<WakeWordAsset>`.
+   */
+  using std__optional_WakeWordAsset_ = std::optional<WakeWordAsset>;
+  inline std::optional<WakeWordAsset> create_std__optional_WakeWordAsset_(const WakeWordAsset& value) noexcept {
+    return std::optional<WakeWordAsset>(value);
+  }
+  inline bool has_value_std__optional_WakeWordAsset_(const std::optional<WakeWordAsset>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline WakeWordAsset get_std__optional_WakeWordAsset_(const std::optional<WakeWordAsset>& optional) noexcept {
+    return optional.value();
+  }
+  
+  // pragma MARK: std::optional<WakeWordBaseModels>
+  /**
+   * Specialized version of `std::optional<WakeWordBaseModels>`.
+   */
+  using std__optional_WakeWordBaseModels_ = std::optional<WakeWordBaseModels>;
+  inline std::optional<WakeWordBaseModels> create_std__optional_WakeWordBaseModels_(const WakeWordBaseModels& value) noexcept {
+    return std::optional<WakeWordBaseModels>(value);
+  }
+  inline bool has_value_std__optional_WakeWordBaseModels_(const std::optional<WakeWordBaseModels>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline WakeWordBaseModels get_std__optional_WakeWordBaseModels_(const std::optional<WakeWordBaseModels>& optional) noexcept {
+    return optional.value();
   }
   
   // pragma MARK: std::optional<bool>

@@ -26,6 +26,10 @@ from 1 through 1024 frames and one finite float32 output score. Symbolic windows
 are probed against bounded supported sizes. Missing or invalid files reject
 session creation.
 
+For custom local paths, integrity hashes and per-keyword cooldowns, see
+[custom model loading](docs/CUSTOM_MODELS.md). The default bundled names remain
+supported when `baseModels` is omitted.
+
 Read [model provenance and licensing](docs/PROVENANCE.md) first. A source-code
 license does not establish the license of pretrained weights. This port does not
 download models, train a “Hey Deca” classifier, or establish detection accuracy.

@@ -6,6 +6,10 @@ export interface WakeWordModel {
    * This package does not include model files; the app supplies them and their licenses.
    */
   model: string;
+  /** Optional 64-character SHA-256 hex digest, checked before ONNX loads the same bytes. */
+  sha256?: string;
+  /** Per-keyword cooldown in milliseconds. Overrides config.refractoryMs; finite and nonnegative. */
+  refractoryMs?: number;
   /** Detection label. Defaults to the model file name without its extension. */
   keyword?: string;
   /** Finite detection score in `[0, 1]`. @default 0.5 */

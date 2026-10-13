@@ -10,7 +10,11 @@
 #include <fbjni/fbjni.h>
 #include "WakeWordConfig.hpp"
 
+#include "JWakeWordAsset.hpp"
+#include "JWakeWordBaseModels.hpp"
 #include "JWakeWordModel.hpp"
+#include "WakeWordAsset.hpp"
+#include "WakeWordBaseModels.hpp"
 #include "WakeWordModel.hpp"
 #include <optional>
 #include <string>
@@ -37,6 +41,8 @@ namespace margelo::nitro::wakeword {
       static const auto clazz = javaClassStatic();
       static const auto fieldModels = clazz->getField<jni::JArrayClass<JWakeWordModel>>("models");
       jni::local_ref<jni::JArrayClass<JWakeWordModel>> models = this->getFieldValue(fieldModels);
+      static const auto fieldBaseModels = clazz->getField<JWakeWordBaseModels>("baseModels");
+      jni::local_ref<JWakeWordBaseModels> baseModels = this->getFieldValue(fieldBaseModels);
       static const auto fieldVadThreshold = clazz->getField<jni::JDouble>("vadThreshold");
       jni::local_ref<jni::JDouble> vadThreshold = this->getFieldValue(fieldVadThreshold);
       static const auto fieldRefractoryMs = clazz->getField<jni::JDouble>("refractoryMs");
@@ -60,6 +66,7 @@ namespace margelo::nitro::wakeword {
           }
           return __vector;
         }(models),
+        baseModels != nullptr ? std::make_optional(baseModels->toCpp()) : std::nullopt,
         vadThreshold != nullptr ? std::make_optional(vadThreshold->value()) : std::nullopt,
         refractoryMs != nullptr ? std::make_optional(refractoryMs->value()) : std::nullopt,
         foregroundService != nullptr ? std::make_optional(static_cast<bool>(foregroundService->value())) : std::nullopt,
@@ -75,7 +82,7 @@ namespace margelo::nitro::wakeword {
      */
     [[maybe_unused]]
     static jni::local_ref<JWakeWordConfig::javaobject> fromCpp(const WakeWordConfig& value) {
-      using JSignature = JWakeWordConfig(jni::alias_ref<jni::JArrayClass<JWakeWordModel>>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JBoolean>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JBoolean>);
+      using JSignature = JWakeWordConfig(jni::alias_ref<jni::JArrayClass<JWakeWordModel>>, jni::alias_ref<JWakeWordBaseModels>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JBoolean>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JBoolean>);
       static const auto clazz = javaClassStatic();
       static const auto create = clazz->getStaticMethod<JSignature>("fromCpp");
       return create(
@@ -90,6 +97,7 @@ namespace margelo::nitro::wakeword {
           }
           return __array;
         }(value.models),
+        value.baseModels.has_value() ? JWakeWordBaseModels::fromCpp(value.baseModels.value()) : nullptr,
         value.vadThreshold.has_value() ? jni::JDouble::valueOf(value.vadThreshold.value()) : nullptr,
         value.refractoryMs.has_value() ? jni::JDouble::valueOf(value.refractoryMs.value()) : nullptr,
         value.foregroundService.has_value() ? jni::JBoolean::valueOf(value.foregroundService.value()) : nullptr,

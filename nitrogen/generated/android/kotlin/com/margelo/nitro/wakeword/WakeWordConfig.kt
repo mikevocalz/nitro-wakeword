@@ -23,6 +23,9 @@ data class WakeWordConfig(
   val models: Array<WakeWordModel>,
   @DoNotStrip
   @Keep
+  val baseModels: WakeWordBaseModels?,
+  @DoNotStrip
+  @Keep
   val vadThreshold: Double?,
   @DoNotStrip
   @Keep
@@ -46,6 +49,7 @@ data class WakeWordConfig(
     if (this === other) return true
     if (other !is WakeWordConfig) return false
     return Objects.deepEquals(this.models, other.models)
+      && Objects.deepEquals(this.baseModels, other.baseModels)
       && Objects.deepEquals(this.vadThreshold, other.vadThreshold)
       && Objects.deepEquals(this.refractoryMs, other.refractoryMs)
       && Objects.deepEquals(this.foregroundService, other.foregroundService)
@@ -57,6 +61,7 @@ data class WakeWordConfig(
   override fun hashCode(): Int {
     return arrayOf<Any?>(
       models,
+      baseModels,
       vadThreshold,
       refractoryMs,
       foregroundService,
@@ -74,8 +79,8 @@ data class WakeWordConfig(
     @Keep
     @Suppress("unused")
     @JvmStatic
-    private fun fromCpp(models: Array<WakeWordModel>, vadThreshold: Double?, refractoryMs: Double?, foregroundService: Boolean?, notificationTitle: String?, notificationText: String?, manageAudioSession: Boolean?): WakeWordConfig {
-      return WakeWordConfig(models, vadThreshold, refractoryMs, foregroundService, notificationTitle, notificationText, manageAudioSession)
+    private fun fromCpp(models: Array<WakeWordModel>, baseModels: WakeWordBaseModels?, vadThreshold: Double?, refractoryMs: Double?, foregroundService: Boolean?, notificationTitle: String?, notificationText: String?, manageAudioSession: Boolean?): WakeWordConfig {
+      return WakeWordConfig(models, baseModels, vadThreshold, refractoryMs, foregroundService, notificationTitle, notificationText, manageAudioSession)
     }
   }
 }

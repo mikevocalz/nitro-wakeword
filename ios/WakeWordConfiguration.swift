@@ -3,9 +3,9 @@ import Foundation
 /// Resolves and validates untrusted JS values before numeric conversion or ONNX
 /// allocation. Android-only preferences intentionally have no effect on iOS.
 struct WakeWordConfiguration {
-  let melURL: URL
-  let embeddingURL: URL
-  let vadURL: URL?
+  let mel: ResolvedModelAsset
+  let embedding: ResolvedModelAsset
+  let vad: ResolvedModelAsset?
   let vadThreshold: Float
   let refractoryMs: Double
   let manageAudioSession: Bool
@@ -41,24 +41,26 @@ struct WakeWordConfiguration {
             patience.rounded(.towardZero) == patience else {
         throw WakeWordError("patience must be an integer between 1 and 2147483647")
       }
-      guard let url = ModelResolver.resolve(model.model) else {
-        throw WakeWordError("Model not found: \(model.model)")
+      let cooldown = model.refractoryMs ?? refractoryMs
+      guard cooldown.isFinite, cooldown >= 0 else {
+        throw WakeWordError("model.refractoryMs must be a finite non-negative number")
       }
       resolved.append(KeywordConfiguration(
-        keyword: keyword, url: url, threshold: threshold, patience: Int(patience)
+        keyword: keyword, asset: try ResolvedModelAsset(model: model.model, sha256: model.sha256),
+        threshold: threshold, patience: Int(patience), refractoryMs: cooldown
       ))
     }
     keywords = resolved
-    guard let mel = ModelResolver.resolve("melspectrogram.onnx"),
-          let embedding = ModelResolver.resolve("embedding_model.onnx") else {
-      throw WakeWordError("Base models not found. Add melspectrogram.onnx and embedding_model.onnx to the app bundle.")
+    let bases = config.baseModels
+    if let configuredVad = bases?.vad {
+      _ = try ModelReference.localFileURL(configuredVad.model)
+      try ModelIntegrity.validateDigest(configuredVad.sha256)
     }
-    melURL = mel
-    embeddingURL = embedding
-    vadURL = vadThreshold > 0 ? ModelResolver.resolve("silero_vad.onnx") : nil
-    if vadThreshold > 0 && vadURL == nil {
-      throw WakeWordError("silero_vad.onnx not found but vadThreshold > 0")
-    }
+    mel = try ResolvedModelAsset(model: bases?.melspectrogram.model ?? "melspectrogram.onnx", sha256: bases?.melspectrogram.sha256)
+    embedding = try ResolvedModelAsset(model: bases?.embedding.model ?? "embedding_model.onnx", sha256: bases?.embedding.sha256)
+    vad = vadThreshold > 0
+      ? try ResolvedModelAsset(model: bases?.vad?.model ?? "silero_vad.onnx", sha256: bases?.vad?.sha256)
+      : nil
   }
 
   static func probability(_ value: Double, name: String) throws -> Float {

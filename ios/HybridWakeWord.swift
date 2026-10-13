@@ -27,11 +27,10 @@ final class HybridWakeWord: HybridWakeWordSpec {
       self.snapshot.setLoaded(false)
       let configuration = try WakeWordConfiguration(config)
       self.engine = try OpenWakeWordEngine(
-        melURL: configuration.melURL,
-        embeddingURL: configuration.embeddingURL,
-        vadURL: configuration.vadURL,
+        mel: configuration.mel,
+        embedding: configuration.embedding,
+        vad: configuration.vad,
         vadThreshold: configuration.vadThreshold,
-        refractoryMs: configuration.refractoryMs,
         keywords: configuration.keywords
       )
       self.manageAudioSession = configuration.manageAudioSession

@@ -73,6 +73,29 @@ describe('createWakeWord', () => {
     expect(NitroModules.createHybridObject).toHaveBeenCalledWith('WakeWord');
   });
 
+  it('forwards custom base models, integrity hashes and independent keyword cooldowns unchanged', async () => {
+    const native = installFakeNative();
+    const custom: WakeWordConfig = {
+      baseModels: {
+        melspectrogram: {model: '/app/mel.onnx', sha256: 'a'.repeat(64)},
+        embedding: {model: '/app/embedding.onnx', sha256: 'b'.repeat(64)},
+      },
+      models: [
+        {
+          model: '/app/first.onnx',
+          keyword: 'first',
+          sha256: 'c'.repeat(64),
+          refractoryMs: 100,
+        },
+        {model: '/app/second.onnx', keyword: 'second', refractoryMs: 2000},
+      ],
+      vadThreshold: 0,
+    };
+    const session = await createWakeWord(custom);
+    expect(native.load.mock.calls[0]?.[0]).toBe(custom);
+    await session.unload();
+  });
+
   it('keeps session lifecycle and listeners independent', async () => {
     const firstNative = installFakeNative();
     const secondNative = installFakeNative();

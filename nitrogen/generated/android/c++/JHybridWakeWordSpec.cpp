@@ -11,6 +11,10 @@
 namespace margelo::nitro::wakeword { struct WakeWordConfig; }
 // Forward declaration of `WakeWordModel` to properly resolve imports.
 namespace margelo::nitro::wakeword { struct WakeWordModel; }
+// Forward declaration of `WakeWordBaseModels` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordBaseModels; }
+// Forward declaration of `WakeWordAsset` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordAsset; }
 // Forward declaration of `WakeWordDetection` to properly resolve imports.
 namespace margelo::nitro::wakeword { struct WakeWordDetection; }
 
@@ -24,6 +28,10 @@ namespace margelo::nitro::wakeword { struct WakeWordDetection; }
 #include "JWakeWordModel.hpp"
 #include <string>
 #include <optional>
+#include "WakeWordBaseModels.hpp"
+#include "JWakeWordBaseModels.hpp"
+#include "WakeWordAsset.hpp"
+#include "JWakeWordAsset.hpp"
 #include "WakeWordDetection.hpp"
 #include <functional>
 #include "JFunc_void_WakeWordDetection.hpp"

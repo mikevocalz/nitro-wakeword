@@ -2,7 +2,8 @@ import Foundation
 
 struct KeywordConfiguration {
   let keyword: String
-  let url: URL
+  let asset: ResolvedModelAsset
   let threshold: Float
   let patience: Int
+  let refractoryMs: Double
 }

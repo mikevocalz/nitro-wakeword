@@ -5,7 +5,7 @@ output="$(mktemp -d "${TMPDIR:-/tmp}/nitro-swift-audio.XXXXXX")"
 trap 'rm -rf "$output"' EXIT
 platform_sources=()
 if [[ "$(uname -s)" == Darwin ]]; then
-  platform_sources+=(ios/AudioChunkStream.swift ios/AVAudioPCMBuffer+ownedCopy.swift tests/native/swift/AudioConversionChecks.swift)
+  platform_sources+=(ios/ModelIntegrity.swift ios/ModelReference.swift ios/KeywordCooldown.swift tests/native/swift/ModelIntegrityChecks.swift ios/AudioChunkStream.swift ios/AVAudioPCMBuffer+ownedCopy.swift tests/native/swift/AudioConversionChecks.swift)
 fi
 swiftc -swift-version 5 \
   ios/WakeWordError.swift ios/PcmFrameAccumulator.swift ios/VadGate.swift \

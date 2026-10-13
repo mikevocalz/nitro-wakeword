@@ -39,3 +39,5 @@ jobs:
           xcodebuild -version
       - name: Test native framing, VAD and AVAudioConverter; typecheck iOS capture
         run: scripts/test-swift-audio.sh
+      - name: Typecheck Swift inference and Objective-C++ against ONNX Runtime headers
+        run: scripts/check-onnx-bridge.sh

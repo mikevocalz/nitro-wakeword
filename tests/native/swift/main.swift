@@ -160,6 +160,7 @@ try test("normalized PCM matches signed int16 scale and clamps invalid samples")
 
 #if canImport(AVFoundation)
 try runAudioConversionChecks()
+try runModelIntegrityChecks()
 #endif
 
 try test("saturated audio backlog marks exactly the next accepted buffer discontinuous") {
