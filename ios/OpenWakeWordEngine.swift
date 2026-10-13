@@ -8,8 +8,8 @@ import Foundation
 /// the last `N` embeddings (`N` = classifier window, usually 16) -> keyword score.
 /// Optionally gated by Silero VAD.
 final class OpenWakeWordEngine {
-  static let sampleRate = 16000
-  static let chunkSize = 1280
+  static let sampleRate = WakeWordAudioFormat.sampleRate
+  static let chunkSize = WakeWordAudioFormat.chunkSize
   static let melContext = 480          // 3 extra hops so that 1280 samples yield 8 frames
   static let melWindow = 76
   static let melBins = 32
@@ -20,7 +20,6 @@ final class OpenWakeWordEngine {
   private let melModel: OnnxModel
   private let embeddingModel: OnnxModel
   private let vadModel: OnnxModel?
-  private let vadThreshold: Float
   private let refractorySeconds: Double
   private let keywords: [KeywordClassifier]
 
@@ -33,9 +32,8 @@ final class OpenWakeWordEngine {
 
   private var vadH = [Float](repeating: 0, count: 2 * 64)
   private var vadC = [Float](repeating: 0, count: 2 * 64)
-  private var vadPending: [Float] = []
-  private var vadScores = [Float](repeating: 0, count: vadHistory)
-  private var vadIndex = 0
+  private let vadPending: PcmFrameAccumulator
+  private let vadGate: VadGate
 
   init(
     melURL: URL,
@@ -45,6 +43,8 @@ final class OpenWakeWordEngine {
     refractoryMs: Double,
     keywords: [KeywordConfiguration]
   ) throws {
+    vadPending = try PcmFrameAccumulator(frameSize: OpenWakeWordEngine.vadFrame)
+    vadGate = try VadGate(historySize: OpenWakeWordEngine.vadHistory, threshold: vadThreshold)
     melModel = try OnnxModel(url: melURL)
     embeddingModel = try OnnxModel(url: embeddingURL)
     if vadThreshold > 0, let vadURL {
@@ -52,7 +52,6 @@ final class OpenWakeWordEngine {
     } else {
       vadModel = nil
     }
-    self.vadThreshold = vadThreshold
     refractorySeconds = refractoryMs / 1000
 
     var loaded: [KeywordClassifier] = []
@@ -113,7 +112,7 @@ final class OpenWakeWordEngine {
       keyword.consecutive = 0
       keyword.lastDetectionUptimeS = -.infinity
     }
-    vadScores = [Float](repeating: 0, count: OpenWakeWordEngine.vadHistory)
+    resetVadState()
   }
 
   /// Flushes every buffer back to "silence". Call before (re)starting capture:
@@ -125,10 +124,7 @@ final class OpenWakeWordEngine {
     melFramesSeen = 0
     features = [Float](repeating: 0, count: features.count)
     featuresSeen = 0
-    vadH = [Float](repeating: 0, count: 2 * 64)
-    vadC = [Float](repeating: 0, count: 2 * 64)
-    vadPending.removeAll()
-    vadIndex = 0
+    resetVadState()
     try warmUp()
   }
 
@@ -178,7 +174,7 @@ final class OpenWakeWordEngine {
 
     var scores: [(String, Float)] = []
     var detections: [KeywordDetection] = []
-    let speech = vadModel == nil || (vadScores.max() ?? 0) >= vadThreshold
+    let speech = vadModel == nil || vadGate.isSpeech
     let nowUptimeS = ProcessInfo.processInfo.systemUptime
 
     for keyword in keywords {
@@ -232,12 +228,9 @@ final class OpenWakeWordEngine {
   private func runVad(_ chunk: [Float]) throws {
     guard let vad = vadModel else { return }
     // Silero expects audio normalised to [-1, 1].
-    vadPending.append(contentsOf: chunk.map { $0 / 32768 })
     let frame = OpenWakeWordEngine.vadFrame
-    var latest: Float? = nil
-    while vadPending.count >= frame {
-      let input = Array(vadPending[0..<frame])
-      vadPending.removeFirst(frame)
+    var probabilities: [Float] = []
+    try vadPending.append(chunk.map { $0 / 32768 }) { input in
       let outputs = try vad.run(inputs: [
         "input": OnnxModel.floatTensor(input, shape: [1, frame]),
         "sr": OnnxModel.int64Scalar(Int64(OpenWakeWordEngine.sampleRate)),
@@ -250,11 +243,15 @@ final class OpenWakeWordEngine {
       // Commit recurrent state only after every required output is valid.
       vadH = nextH
       vadC = nextC
-      latest = probability
+      probabilities.append(probability)
     }
-    if let latest {
-      vadScores[vadIndex] = latest
-      vadIndex = (vadIndex + 1) % vadScores.count
-    }
+    try vadGate.recordChunk(probabilities)
+  }
+
+  private func resetVadState() {
+    vadH = [Float](repeating: 0, count: 2 * 64)
+    vadC = [Float](repeating: 0, count: 2 * 64)
+    vadPending.reset()
+    vadGate.reset()
   }
 }

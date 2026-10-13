@@ -1,0 +1,41 @@
+name: Native audio checks
+
+on:
+  pull_request:
+  push:
+    branches: [plan/audio-vad]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: audio-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kotlin:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Report installed toolchain
+        run: |
+          java -version
+          kotlinc -version
+      - run: scripts/test-kotlin-audio.sh
+
+  swift:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Report installed toolchain
+        run: |
+          swiftc --version
+          xcodebuild -version
+      - name: Test native framing, VAD and AVAudioConverter; typecheck iOS capture
+        run: scripts/test-swift-audio.sh

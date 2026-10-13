@@ -58,11 +58,11 @@ final class HybridWakeWord: HybridWakeWordSpec {
       // Explicit start must be able to replace a stopped recovery generation.
       self.stopCapture()
       try MicrophonePermission.requireGranted()
-      try engine.reset()
       let capture = AudioCapture(
         queue: self.queue,
         chunkSize: OpenWakeWordEngine.chunkSize,
         manageSession: self.manageAudioSession,
+        onStreamStart: { try engine.reset() },
         onChunk: { [weak self] chunk in self?.process(chunk) },
         onError: { [weak self] message in self?.listeners.error?(message) },
         onRunningChanged: { [weak self] running in self?.snapshot.setListening(running) }
@@ -136,6 +136,7 @@ final class HybridWakeWord: HybridWakeWordSpec {
         }
       }
     } catch {
+      stopCapture()
       listeners.error?("Inference failed: \(error.localizedDescription)")
     }
   }

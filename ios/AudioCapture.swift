@@ -9,6 +9,7 @@ final class AudioCapture {
   private let owner = UUID()
   private let chunkSize: Int
   private let manageSession: Bool
+  private let onStreamStart: () throws -> Void
   private let onChunk: ([Float]) -> Void
   private let onError: (String) -> Void
   private let onRunningChanged: (Bool) -> Void
@@ -29,6 +30,7 @@ final class AudioCapture {
     queue: DispatchQueue,
     chunkSize: Int,
     manageSession: Bool,
+    onStreamStart: @escaping () throws -> Void,
     onChunk: @escaping ([Float]) -> Void,
     onError: @escaping (String) -> Void,
     onRunningChanged: @escaping (Bool) -> Void
@@ -36,6 +38,7 @@ final class AudioCapture {
     self.queue = queue
     self.chunkSize = chunkSize
     self.manageSession = manageSession
+    self.onStreamStart = onStreamStart
     self.onChunk = onChunk
     self.onError = onError
     self.onRunningChanged = onRunningChanged
@@ -93,23 +96,34 @@ final class AudioCapture {
     guard format.sampleRate.isFinite, format.sampleRate > 0, format.channelCount > 0 else {
       throw WakeWordError("Microphone input format unavailable")
     }
-    let activeStream = AudioChunkStream(chunkSize: chunkSize)
+    let activeStream = try AudioChunkStream(chunkSize: chunkSize)
+    try onStreamStart()
     stream = activeStream
-    let slots = DispatchSemaphore(value: 8)
+    let backlog = try AudioBufferBacklog(capacity: 8)
     let ownerQueue = queue
     // nil allows AVAudioEngine to select the current hardware format.
     input.installTap(onBus: 0, bufferSize: 4096, format: nil) { [weak self] buffer, _ in
-      guard slots.wait(timeout: .now()) == .success else { return }
+      let admission = backlog.acquire()
+      guard admission != .dropped else { return }
       guard let copied = buffer.ownedCopy() else {
-        slots.signal()
+        backlog.markDropped()
+        backlog.release()
         return
       }
       ownerQueue.async { [weak self] in
-        defer { slots.signal() }
+        defer { backlog.release() }
         guard let self, self.isRunning, self.stream === activeStream else { return }
         do {
-          try activeStream.process(copied, onChunk: self.onChunk)
+          if admission == .discontinuous {
+            try self.onStreamStart()
+            activeStream.reset()
+          }
+          try activeStream.process(copied, onDiscontinuity: self.onStreamStart) { chunk in
+            guard self.isRunning, self.stream === activeStream else { return }
+            self.onChunk(chunk)
+          }
         } catch {
+          self.stop()
           self.onError(error.localizedDescription)
         }
       }

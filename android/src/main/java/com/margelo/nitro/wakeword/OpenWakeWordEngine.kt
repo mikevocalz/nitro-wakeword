@@ -16,7 +16,7 @@ internal class OpenWakeWordEngine(
   melBytes: ByteArray,
   embeddingBytes: ByteArray,
   vadBytes: ByteArray?,
-  private val vadThreshold: Float,
+  vadThreshold: Float,
   refractoryMs: Double,
   keywordSpecs: List<WakeWordKeywordSpec>,
 ) : AutoCloseable {
@@ -49,10 +49,8 @@ internal class OpenWakeWordEngine(
 
   private var vadH = FloatArray(2 * 64)
   private var vadC = FloatArray(2 * 64)
-  private val vadPending = FloatArray(CHUNK_SIZE * 2)
-  private var vadPendingCount = 0
-  private val vadScores = FloatArray(VAD_HISTORY)
-  private var vadIndex = 0
+  private val vadFrames = PcmFrameAccumulator(VAD_FRAME)
+  private val vadGate = VadGate(VAD_HISTORY, vadThreshold)
 
   init {
     try {
@@ -115,7 +113,8 @@ internal class OpenWakeWordEngine(
     val zeros = FloatArray(CHUNK_SIZE)
     repeat(MEL_WINDOW / 8 + maxWindow + 2) { processChunk(zeros, emit = false) }
     keywords.forEach { it.consecutive = 0; it.lastDetection = Double.NEGATIVE_INFINITY }
-    vadScores.fill(0f)
+    // Warmup may end on a partial VAD frame. Real capture starts with fresh VAD state.
+    resetVad()
   }
 
   /**
@@ -129,11 +128,15 @@ internal class OpenWakeWordEngine(
     melFramesSeen = 0
     features.fill(0f)
     featuresSeen = 0
-    vadH = FloatArray(2 * 64)
-    vadC = FloatArray(2 * 64)
-    vadPendingCount = 0
-    vadIndex = 0
+    resetVad()
     warmUp()
+  }
+
+  private fun resetVad() {
+    vadH.fill(0f)
+    vadC.fill(0f)
+    vadFrames.reset()
+    vadGate.reset()
   }
 
   fun setThreshold(keyword: String, threshold: Float) {
@@ -169,7 +172,7 @@ internal class OpenWakeWordEngine(
 
     val scores = ArrayList<Pair<String, Float>>(keywords.size)
     val detections = ArrayList<WakeWordDetectionResult>(0)
-    val speech = vadModel == null || vadScores.max() >= vadThreshold
+    val speech = vadModel == null || vadGate.isSpeech
     val now = SystemClock.elapsedRealtime() / 1000.0
 
     for (keyword in keywords) {
@@ -216,14 +219,10 @@ internal class OpenWakeWordEngine(
 
   private fun runVad(chunk: FloatArray) {
     val vad = vadModel ?: return
-    // Silero expects audio normalised to [-1, 1].
-    for (i in chunk.indices) vadPending[vadPendingCount + i] = chunk[i] / 32768f
-    vadPendingCount += chunk.size
-    var latest: Float? = null
-    while (vadPendingCount >= VAD_FRAME) {
-      val input = vadPending.copyOfRange(0, VAD_FRAME)
-      System.arraycopy(vadPending, VAD_FRAME, vadPending, 0, vadPendingCount - VAD_FRAME)
-      vadPendingCount -= VAD_FRAME
+    val probabilities = ArrayList<Float>(3)
+    vadFrames.append(chunk) { input ->
+      // Silero expects audio normalised to [-1, 1]. The emitted frame is owned here.
+      for (i in input.indices) input[i] /= 32768f
       vad.floatTensor(input, longArrayOf(1, VAD_FRAME.toLong())).use { inputTensor ->
         vad.int64Scalar(SAMPLE_RATE.toLong()).use { srTensor ->
           vad.floatTensor(vadH, longArrayOf(2, 1, 64)).use { hTensor ->
@@ -234,16 +233,13 @@ internal class OpenWakeWordEngine(
               val probability = ModelOutputValidation.probability(outputs["output"], "VAD output")
               vadH = nextH
               vadC = nextC
-              latest = probability
+              probabilities.add(probability)
             }
           }
         }
       }
     }
-    latest?.let {
-      vadScores[vadIndex] = it
-      vadIndex = (vadIndex + 1) % vadScores.size
-    }
+    vadGate.recordChunk(probabilities.toFloatArray())
   }
 
   override fun close() {

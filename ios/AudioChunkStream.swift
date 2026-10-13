@@ -5,32 +5,41 @@ import Foundation
 /// owner queue. Restart creates a new stream rather than clearing tap-thread
 /// state concurrently.
 final class AudioChunkStream {
-  private let chunkSize: Int
+  private let frames: PcmFrameAccumulator
   private var converter: AVAudioConverter?
-  private var pending: [Float] = []
   private let targetFormat = AVAudioFormat(
     commonFormat: .pcmFormatFloat32,
-    sampleRate: Double(OpenWakeWordEngine.sampleRate),
+    sampleRate: Double(WakeWordAudioFormat.sampleRate),
     channels: 1,
     interleaved: false
   )!
 
-  init(chunkSize: Int) { self.chunkSize = chunkSize }
+  init(chunkSize: Int) throws { frames = try PcmFrameAccumulator(frameSize: chunkSize) }
 
-  func process(_ buffer: AVAudioPCMBuffer, onChunk: ([Float]) -> Void) throws {
+  func reset() {
+    converter = nil
+    frames.reset()
+  }
+
+  func process(
+    _ buffer: AVAudioPCMBuffer,
+    onDiscontinuity: () throws -> Void = {},
+    onChunk: ([Float]) -> Void
+  ) throws {
     let inputFormat = buffer.format
     guard inputFormat.sampleRate.isFinite, inputFormat.sampleRate > 0, buffer.frameLength > 0 else { return }
     if converter == nil || converter?.inputFormat != inputFormat {
+      if converter != nil { try onDiscontinuity() }
       guard let fresh = AVAudioConverter(from: inputFormat, to: targetFormat) else {
         throw WakeWordError("Cannot convert \(inputFormat) to 16 kHz mono")
       }
       converter = fresh
-      pending.removeAll()
+      frames.reset()
     }
     guard let converter else { return }
-    let frames = ceil(Double(buffer.frameLength) * targetFormat.sampleRate / inputFormat.sampleRate) + 32
-    guard frames < Double(UInt32.max),
-          let output = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: AVAudioFrameCount(frames)) else {
+    let capacity = ceil(Double(buffer.frameLength) * targetFormat.sampleRate / inputFormat.sampleRate) + 32
+    guard capacity < Double(UInt32.max),
+          let output = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: AVAudioFrameCount(capacity)) else {
       throw WakeWordError("Cannot allocate converted microphone buffer")
     }
     var consumed = false
@@ -48,14 +57,9 @@ final class AudioChunkStream {
       throw WakeWordError("Audio conversion failed: \(error?.localizedDescription ?? "unknown")")
     }
     guard let channel = output.floatChannelData?[0] else { return }
-    for index in 0..<Int(output.frameLength) {
-      let sample = channel[index]
-      pending.append(sample.isFinite ? max(-32768, min(32767, sample * 32767)) : 0)
+    let samples = (0..<Int(output.frameLength)).map { index -> Float in
+      return WakeWordAudioFormat.int16ScaledSample(channel[index])
     }
-    while pending.count >= chunkSize {
-      let chunk = Array(pending.prefix(chunkSize))
-      pending.removeFirst(chunkSize)
-      onChunk(chunk)
-    }
+    frames.append(samples, onFrame: onChunk)
   }
 }
