@@ -20,7 +20,6 @@ final class OpenWakeWordEngine {
   private let melModel: OnnxModel
   private let embeddingModel: OnnxModel
   private let vadModel: OnnxModel?
-  private let refractorySeconds: Double
   private let keywords: [KeywordClassifier]
 
   private var raw = [Float](repeating: 0, count: chunkSize + melContext)
@@ -36,31 +35,29 @@ final class OpenWakeWordEngine {
   private let vadGate: VadGate
 
   init(
-    melURL: URL,
-    embeddingURL: URL,
-    vadURL: URL?,
+    mel: ResolvedModelAsset,
+    embedding: ResolvedModelAsset,
+    vad: ResolvedModelAsset?,
     vadThreshold: Float,
-    refractoryMs: Double,
     keywords: [KeywordConfiguration]
   ) throws {
     vadPending = try PcmFrameAccumulator(frameSize: OpenWakeWordEngine.vadFrame)
     vadGate = try VadGate(historySize: OpenWakeWordEngine.vadHistory, threshold: vadThreshold)
-    melModel = try OnnxModel(url: melURL)
-    embeddingModel = try OnnxModel(url: embeddingURL)
-    if vadThreshold > 0, let vadURL {
-      vadModel = try OnnxModel(url: vadURL)
+    melModel = try OnnxModel(asset: mel)
+    embeddingModel = try OnnxModel(asset: embedding)
+    if vadThreshold > 0, let vad {
+      vadModel = try OnnxModel(asset: vad)
     } else {
       vadModel = nil
     }
-    refractorySeconds = refractoryMs / 1000
 
     var loaded: [KeywordClassifier] = []
     for entry in keywords {
-      let model = try OnnxModel(url: entry.url)
+      let model = try OnnxModel(asset: entry.asset)
       let window = try OpenWakeWordEngine.resolveWindow(model, name: entry.keyword)
-      loaded.append(KeywordClassifier(
+      loaded.append(try KeywordClassifier(
         keyword: entry.keyword, model: model, window: window,
-        threshold: entry.threshold, patience: entry.patience
+        threshold: entry.threshold, patience: entry.patience, refractoryMs: entry.refractoryMs
       ))
     }
     self.keywords = loaded
@@ -110,7 +107,7 @@ final class OpenWakeWordEngine {
     }
     for keyword in keywords {
       keyword.consecutive = 0
-      keyword.lastDetectionUptimeS = -.infinity
+      keyword.cooldown.reset()
     }
     resetVadState()
   }
@@ -201,8 +198,7 @@ final class OpenWakeWordEngine {
         keyword.consecutive = 0
       }
       if keyword.consecutive >= keyword.patience,
-         nowUptimeS - keyword.lastDetectionUptimeS >= refractorySeconds {
-        keyword.lastDetectionUptimeS = nowUptimeS
+         keyword.cooldown.accept(at: nowUptimeS) {
         keyword.consecutive = 0
         detections.append(KeywordDetection(
           keyword: keyword.keyword, score: score,

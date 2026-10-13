@@ -34,6 +34,10 @@ namespace margelo::nitro::wakeword {
       static const auto clazz = javaClassStatic();
       static const auto fieldModel = clazz->getField<jni::JString>("model");
       jni::local_ref<jni::JString> model = this->getFieldValue(fieldModel);
+      static const auto fieldSha256 = clazz->getField<jni::JString>("sha256");
+      jni::local_ref<jni::JString> sha256 = this->getFieldValue(fieldSha256);
+      static const auto fieldRefractoryMs = clazz->getField<jni::JDouble>("refractoryMs");
+      jni::local_ref<jni::JDouble> refractoryMs = this->getFieldValue(fieldRefractoryMs);
       static const auto fieldKeyword = clazz->getField<jni::JString>("keyword");
       jni::local_ref<jni::JString> keyword = this->getFieldValue(fieldKeyword);
       static const auto fieldThreshold = clazz->getField<jni::JDouble>("threshold");
@@ -42,6 +46,8 @@ namespace margelo::nitro::wakeword {
       jni::local_ref<jni::JDouble> patience = this->getFieldValue(fieldPatience);
       return WakeWordModel(
         model->toStdString(),
+        sha256 != nullptr ? std::make_optional(sha256->toStdString()) : std::nullopt,
+        refractoryMs != nullptr ? std::make_optional(refractoryMs->value()) : std::nullopt,
         keyword != nullptr ? std::make_optional(keyword->toStdString()) : std::nullopt,
         threshold != nullptr ? std::make_optional(threshold->value()) : std::nullopt,
         patience != nullptr ? std::make_optional(patience->value()) : std::nullopt
@@ -54,12 +60,14 @@ namespace margelo::nitro::wakeword {
      */
     [[maybe_unused]]
     static jni::local_ref<JWakeWordModel::javaobject> fromCpp(const WakeWordModel& value) {
-      using JSignature = JWakeWordModel(jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JDouble>);
+      using JSignature = JWakeWordModel(jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JDouble>);
       static const auto clazz = javaClassStatic();
       static const auto create = clazz->getStaticMethod<JSignature>("fromCpp");
       return create(
         clazz,
         jni::make_jstring(value.model),
+        value.sha256.has_value() ? jni::make_jstring(value.sha256.value()) : nullptr,
+        value.refractoryMs.has_value() ? jni::JDouble::valueOf(value.refractoryMs.value()) : nullptr,
         value.keyword.has_value() ? jni::make_jstring(value.keyword.value()) : nullptr,
         value.threshold.has_value() ? jni::JDouble::valueOf(value.threshold.value()) : nullptr,
         value.patience.has_value() ? jni::JDouble::valueOf(value.patience.value()) : nullptr

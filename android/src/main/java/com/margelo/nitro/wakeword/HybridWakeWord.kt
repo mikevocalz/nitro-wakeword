@@ -52,20 +52,21 @@ class HybridWakeWord : HybridWakeWordSpec() {
     val specs = config.models.map { model ->
       WakeWordKeywordSpec(
         keyword = model.keyword ?: ModelResolver.defaultKeyword(model.model),
-        bytes = ModelResolver.load(ctx, model.model),
+        bytes = ModelResolver.load(ctx, model.model, model.sha256),
         threshold = (model.threshold ?: 0.5).toFloat(),
         patience = (model.patience ?: 1.0).toInt(),
+        refractoryMs = model.refractoryMs ?: config.refractoryMs ?: 1000.0,
       )
     }
-    val mel = ModelResolver.load(ctx, "melspectrogram.onnx")
-    val embedding = ModelResolver.load(ctx, "embedding_model.onnx")
-    val vad = if (vadThreshold > 0f) ModelResolver.load(ctx, "silero_vad.onnx") else null
+    val bases = config.baseModels
+    val mel = ModelResolver.load(ctx, bases?.melspectrogram?.model ?: "melspectrogram.onnx", bases?.melspectrogram?.sha256)
+    val embedding = ModelResolver.load(ctx, bases?.embedding?.model ?: "embedding_model.onnx", bases?.embedding?.sha256)
+    val vad = if (vadThreshold > 0f) ModelResolver.load(ctx, bases?.vad?.model ?: "silero_vad.onnx", bases?.vad?.sha256) else null
     engine = OpenWakeWordEngine(
       melBytes = mel,
       embeddingBytes = embedding,
       vadBytes = vad,
       vadThreshold = vadThreshold,
-      refractoryMs = config.refractoryMs ?: 1000.0,
       keywordSpecs = specs,
     )
     foregroundService = config.foregroundService ?: false

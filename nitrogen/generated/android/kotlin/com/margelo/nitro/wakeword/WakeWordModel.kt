@@ -23,6 +23,12 @@ data class WakeWordModel(
   val model: String,
   @DoNotStrip
   @Keep
+  val sha256: String?,
+  @DoNotStrip
+  @Keep
+  val refractoryMs: Double?,
+  @DoNotStrip
+  @Keep
   val keyword: String?,
   @DoNotStrip
   @Keep
@@ -37,6 +43,8 @@ data class WakeWordModel(
     if (this === other) return true
     if (other !is WakeWordModel) return false
     return Objects.deepEquals(this.model, other.model)
+      && Objects.deepEquals(this.sha256, other.sha256)
+      && Objects.deepEquals(this.refractoryMs, other.refractoryMs)
       && Objects.deepEquals(this.keyword, other.keyword)
       && Objects.deepEquals(this.threshold, other.threshold)
       && Objects.deepEquals(this.patience, other.patience)
@@ -45,6 +53,8 @@ data class WakeWordModel(
   override fun hashCode(): Int {
     return arrayOf<Any?>(
       model,
+      sha256,
+      refractoryMs,
       keyword,
       threshold,
       patience
@@ -59,8 +69,8 @@ data class WakeWordModel(
     @Keep
     @Suppress("unused")
     @JvmStatic
-    private fun fromCpp(model: String, keyword: String?, threshold: Double?, patience: Double?): WakeWordModel {
-      return WakeWordModel(model, keyword, threshold, patience)
+    private fun fromCpp(model: String, sha256: String?, refractoryMs: Double?, keyword: String?, threshold: Double?, patience: Double?): WakeWordModel {
+      return WakeWordModel(model, sha256, refractoryMs, keyword, threshold, patience)
     }
   }
 }

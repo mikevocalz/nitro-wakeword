@@ -52,6 +52,7 @@ static NSError *OnnxMakeError(const std::string &message) {
 @end
 
 @implementation OnnxSession {
+  NSData *_modelData;
   std::unique_ptr<Ort::Env> _env;
   std::unique_ptr<Ort::Session> _session;
   std::vector<std::string> _inputNames;
@@ -61,14 +62,15 @@ static NSError *OnnxMakeError(const std::string &message) {
   NSArray<NSNumber *> *_firstInputShape;
 }
 
-- (nullable instancetype)initWithModelPath:(NSString *)path error:(NSError **)error {
+- (nullable instancetype)initWithModelData:(NSData *)data error:(NSError **)error {
   if (!(self = [super init])) return nil;
   try {
+    _modelData = [data copy];
     _env = std::make_unique<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, "NitroWakeWord");
     Ort::SessionOptions options;
     options.SetIntraOpNumThreads(1);
     options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-    _session = std::make_unique<Ort::Session>(*_env, path.UTF8String, options);
+    _session = std::make_unique<Ort::Session>(*_env, _modelData.bytes, _modelData.length, options);
 
     Ort::AllocatorWithDefaultOptions allocator;
     NSMutableArray<NSString *> *inputs = [NSMutableArray array];

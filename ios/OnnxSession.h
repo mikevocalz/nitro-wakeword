@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Declared shape of the first input. Symbolic dimensions are reported as -1.
 @property (nonatomic, readonly) NSArray<NSNumber *> *firstInputShape;
 
-- (nullable instancetype)initWithModelPath:(NSString *)path error:(NSError **)error;
+- (nullable instancetype)initWithModelData:(NSData *)data error:(NSError **)error;
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Runs the model. Every output is returned as a float32 tensor.

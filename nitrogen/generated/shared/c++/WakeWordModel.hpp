@@ -41,13 +41,15 @@ namespace margelo::nitro::wakeword {
   struct WakeWordModel final {
   public:
     std::string model     SWIFT_PRIVATE;
+    std::optional<std::string> sha256     SWIFT_PRIVATE;
+    std::optional<double> refractoryMs     SWIFT_PRIVATE;
     std::optional<std::string> keyword     SWIFT_PRIVATE;
     std::optional<double> threshold     SWIFT_PRIVATE;
     std::optional<double> patience     SWIFT_PRIVATE;
 
   public:
     WakeWordModel() = default;
-    explicit WakeWordModel(std::string model, std::optional<std::string> keyword, std::optional<double> threshold, std::optional<double> patience): model(model), keyword(keyword), threshold(threshold), patience(patience) {}
+    explicit WakeWordModel(std::string model, std::optional<std::string> sha256, std::optional<double> refractoryMs, std::optional<std::string> keyword, std::optional<double> threshold, std::optional<double> patience): model(model), sha256(sha256), refractoryMs(refractoryMs), keyword(keyword), threshold(threshold), patience(patience) {}
 
   public:
     friend bool operator==(const WakeWordModel& lhs, const WakeWordModel& rhs) = default;
@@ -64,6 +66,8 @@ namespace margelo::nitro {
       jsi::Object obj = arg.asObject(runtime);
       return margelo::nitro::wakeword::WakeWordModel(
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "model"))),
+        JSIConverter<std::optional<std::string>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sha256"))),
+        JSIConverter<std::optional<double>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "refractoryMs"))),
         JSIConverter<std::optional<std::string>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "keyword"))),
         JSIConverter<std::optional<double>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "threshold"))),
         JSIConverter<std::optional<double>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "patience")))
@@ -72,6 +76,8 @@ namespace margelo::nitro {
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::wakeword::WakeWordModel& arg) {
       jsi::Object obj(runtime);
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "model"), JSIConverter<std::string>::toJSI(runtime, arg.model));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "sha256"), JSIConverter<std::optional<std::string>>::toJSI(runtime, arg.sha256));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "refractoryMs"), JSIConverter<std::optional<double>>::toJSI(runtime, arg.refractoryMs));
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "keyword"), JSIConverter<std::optional<std::string>>::toJSI(runtime, arg.keyword));
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "threshold"), JSIConverter<std::optional<double>>::toJSI(runtime, arg.threshold));
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "patience"), JSIConverter<std::optional<double>>::toJSI(runtime, arg.patience));
@@ -86,6 +92,8 @@ namespace margelo::nitro {
         return false;
       }
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "model")))) return false;
+      if (!JSIConverter<std::optional<std::string>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sha256")))) return false;
+      if (!JSIConverter<std::optional<double>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "refractoryMs")))) return false;
       if (!JSIConverter<std::optional<std::string>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "keyword")))) return false;
       if (!JSIConverter<std::optional<double>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "threshold")))) return false;
       if (!JSIConverter<std::optional<double>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "patience")))) return false;

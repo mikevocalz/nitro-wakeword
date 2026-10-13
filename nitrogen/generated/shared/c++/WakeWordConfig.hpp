@@ -30,9 +30,12 @@
 
 // Forward declaration of `WakeWordModel` to properly resolve imports.
 namespace margelo::nitro::wakeword { struct WakeWordModel; }
+// Forward declaration of `WakeWordBaseModels` to properly resolve imports.
+namespace margelo::nitro::wakeword { struct WakeWordBaseModels; }
 
 #include "WakeWordModel.hpp"
 #include <vector>
+#include "WakeWordBaseModels.hpp"
 #include <optional>
 #include <string>
 
@@ -44,6 +47,7 @@ namespace margelo::nitro::wakeword {
   struct WakeWordConfig final {
   public:
     std::vector<WakeWordModel> models     SWIFT_PRIVATE;
+    std::optional<WakeWordBaseModels> baseModels     SWIFT_PRIVATE;
     std::optional<double> vadThreshold     SWIFT_PRIVATE;
     std::optional<double> refractoryMs     SWIFT_PRIVATE;
     std::optional<bool> foregroundService     SWIFT_PRIVATE;
@@ -53,7 +57,7 @@ namespace margelo::nitro::wakeword {
 
   public:
     WakeWordConfig() = default;
-    explicit WakeWordConfig(std::vector<WakeWordModel> models, std::optional<double> vadThreshold, std::optional<double> refractoryMs, std::optional<bool> foregroundService, std::optional<std::string> notificationTitle, std::optional<std::string> notificationText, std::optional<bool> manageAudioSession): models(models), vadThreshold(vadThreshold), refractoryMs(refractoryMs), foregroundService(foregroundService), notificationTitle(notificationTitle), notificationText(notificationText), manageAudioSession(manageAudioSession) {}
+    explicit WakeWordConfig(std::vector<WakeWordModel> models, std::optional<WakeWordBaseModels> baseModels, std::optional<double> vadThreshold, std::optional<double> refractoryMs, std::optional<bool> foregroundService, std::optional<std::string> notificationTitle, std::optional<std::string> notificationText, std::optional<bool> manageAudioSession): models(models), baseModels(baseModels), vadThreshold(vadThreshold), refractoryMs(refractoryMs), foregroundService(foregroundService), notificationTitle(notificationTitle), notificationText(notificationText), manageAudioSession(manageAudioSession) {}
 
   public:
     friend bool operator==(const WakeWordConfig& lhs, const WakeWordConfig& rhs) = default;
@@ -70,6 +74,7 @@ namespace margelo::nitro {
       jsi::Object obj = arg.asObject(runtime);
       return margelo::nitro::wakeword::WakeWordConfig(
         JSIConverter<std::vector<margelo::nitro::wakeword::WakeWordModel>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "models"))),
+        JSIConverter<std::optional<margelo::nitro::wakeword::WakeWordBaseModels>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "baseModels"))),
         JSIConverter<std::optional<double>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "vadThreshold"))),
         JSIConverter<std::optional<double>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "refractoryMs"))),
         JSIConverter<std::optional<bool>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "foregroundService"))),
@@ -81,6 +86,7 @@ namespace margelo::nitro {
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::wakeword::WakeWordConfig& arg) {
       jsi::Object obj(runtime);
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "models"), JSIConverter<std::vector<margelo::nitro::wakeword::WakeWordModel>>::toJSI(runtime, arg.models));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "baseModels"), JSIConverter<std::optional<margelo::nitro::wakeword::WakeWordBaseModels>>::toJSI(runtime, arg.baseModels));
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "vadThreshold"), JSIConverter<std::optional<double>>::toJSI(runtime, arg.vadThreshold));
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "refractoryMs"), JSIConverter<std::optional<double>>::toJSI(runtime, arg.refractoryMs));
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "foregroundService"), JSIConverter<std::optional<bool>>::toJSI(runtime, arg.foregroundService));
@@ -98,6 +104,7 @@ namespace margelo::nitro {
         return false;
       }
       if (!JSIConverter<std::vector<margelo::nitro::wakeword::WakeWordModel>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "models")))) return false;
+      if (!JSIConverter<std::optional<margelo::nitro::wakeword::WakeWordBaseModels>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "baseModels")))) return false;
       if (!JSIConverter<std::optional<double>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "vadThreshold")))) return false;
       if (!JSIConverter<std::optional<double>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "refractoryMs")))) return false;
       if (!JSIConverter<std::optional<bool>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "foregroundService")))) return false;

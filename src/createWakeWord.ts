@@ -6,8 +6,9 @@ import type {WakeWordSession} from './WakeWordSession';
 /**
  * Loads an independent {@linkcode WakeWordSession} without starting microphone capture.
  * Passes {@linkcode WakeWordConfig} unchanged to native validation and model loading.
- * The app must bundle `melspectrogram.onnx`, `embedding_model.onnx`, and any
- * enabled VAD model, as well as supply classifiers. No model files are bundled.
+ * Supply local baseModels and classifiers, or bundle melspectrogram.onnx,
+ * embedding_model.onnx and any enabled VAD model in the host app.
+ * No model files are bundled.
  *
  * Await `session.unload()` when finished to release its capture and models.
  * Failed setup awaits cleanup before rejecting with the original setup error.

@@ -5,4 +5,5 @@ internal data class WakeWordKeywordSpec(
   val bytes: ByteArray,
   val threshold: Float,
   val patience: Int,
+  val refractoryMs: Double,
 )

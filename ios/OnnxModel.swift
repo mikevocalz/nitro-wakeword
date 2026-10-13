@@ -6,8 +6,9 @@ final class OnnxModel {
   let inputNames: [String]
   let outputNames: [String]
 
-  init(url: URL) throws {
-    session = try OnnxSession(modelPath: url.path)
+  init(asset: ResolvedModelAsset) throws {
+    let bytes = try ModelIntegrity.load(asset.url, sha256: asset.sha256)
+    session = try OnnxSession(modelData: bytes)
     inputNames = session.inputNames
     outputNames = session.outputNames
   }

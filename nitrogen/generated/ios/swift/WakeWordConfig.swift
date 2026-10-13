@@ -18,13 +18,19 @@ public extension WakeWordConfig {
   /**
    * Create a new instance of `WakeWordConfig`.
    */
-  init(models: [WakeWordModel], vadThreshold: Double?, refractoryMs: Double?, foregroundService: Bool?, notificationTitle: String?, notificationText: String?, manageAudioSession: Bool?) {
+  init(models: [WakeWordModel], baseModels: WakeWordBaseModels?, vadThreshold: Double?, refractoryMs: Double?, foregroundService: Bool?, notificationTitle: String?, notificationText: String?, manageAudioSession: Bool?) {
     self.init({ () -> bridge.std__vector_WakeWordModel_ in
       var __vector = bridge.create_std__vector_WakeWordModel_(models.count)
       for __item in models {
         __vector.push_back(__item)
       }
       return __vector
+    }(), { () -> bridge.std__optional_WakeWordBaseModels_ in
+      if let __unwrappedValue = baseModels {
+        return bridge.create_std__optional_WakeWordBaseModels_(__unwrappedValue)
+      } else {
+        return .init()
+      }
     }(), { () -> bridge.std__optional_double_ in
       if let __unwrappedValue = vadThreshold {
         return bridge.create_std__optional_double_(__unwrappedValue)
@@ -67,6 +73,11 @@ public extension WakeWordConfig {
   @inline(__always)
   var models: [WakeWordModel] {
     return self.__models.map({ __item in __item })
+  }
+  
+  @inline(__always)
+  var baseModels: WakeWordBaseModels? {
+    return self.__baseModels.value
   }
   
   @inline(__always)

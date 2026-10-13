@@ -1,9 +1,12 @@
+import type {WakeWordBaseModels} from './WakeWordBaseModels';
 import type {WakeWordModel} from './WakeWordModel';
 
 /** Model and capture options for `createWakeWord`. */
 export interface WakeWordConfig {
   /** Classifiers to load. Requires at least one model with a unique keyword. */
   models: WakeWordModel[];
+  /** Local feature models. Omit to resolve the conventional bundled file names. */
+  baseModels?: WakeWordBaseModels;
   /**
    * Speech probability in `[0, 1]` required by the Silero VAD gate.
    * `0` disables VAD. Otherwise the app must provide `silero_vad.onnx`.

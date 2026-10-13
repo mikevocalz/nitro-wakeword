@@ -18,8 +18,20 @@ public extension WakeWordModel {
   /**
    * Create a new instance of `WakeWordModel`.
    */
-  init(model: String, keyword: String?, threshold: Double?, patience: Double?) {
+  init(model: String, sha256: String?, refractoryMs: Double?, keyword: String?, threshold: Double?, patience: Double?) {
     self.init(std.string(model), { () -> bridge.std__optional_std__string_ in
+      if let __unwrappedValue = sha256 {
+        return bridge.create_std__optional_std__string_(std.string(__unwrappedValue))
+      } else {
+        return .init()
+      }
+    }(), { () -> bridge.std__optional_double_ in
+      if let __unwrappedValue = refractoryMs {
+        return bridge.create_std__optional_double_(__unwrappedValue)
+      } else {
+        return .init()
+      }
+    }(), { () -> bridge.std__optional_std__string_ in
       if let __unwrappedValue = keyword {
         return bridge.create_std__optional_std__string_(std.string(__unwrappedValue))
       } else {
@@ -43,6 +55,30 @@ public extension WakeWordModel {
   @inline(__always)
   var model: String {
     return String(self.__model)
+  }
+  
+  @inline(__always)
+  var sha256: String? {
+    return { () -> String? in
+      if bridge.has_value_std__optional_std__string_(self.__sha256) {
+        let __unwrapped = bridge.get_std__optional_std__string_(self.__sha256)
+        return String(__unwrapped)
+      } else {
+        return nil
+      }
+    }()
+  }
+  
+  @inline(__always)
+  var refractoryMs: Double? {
+    return { () -> Double? in
+      if bridge.has_value_std__optional_double_(self.__refractoryMs) {
+        let __unwrapped = bridge.get_std__optional_double_(self.__refractoryMs)
+        return __unwrapped
+      } else {
+        return nil
+      }
+    }()
   }
   
   @inline(__always)

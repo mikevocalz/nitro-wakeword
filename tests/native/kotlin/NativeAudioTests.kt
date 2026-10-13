@@ -6,6 +6,7 @@ internal object NativeAudioTests {
 
   @JvmStatic
   fun main(args: Array<String>) {
+    ModelIntegrityTests.run()
     PcmFrameAccumulatorTests.run()
     VadGateTests.run()
     ModelOutputValidationTests.run()

@@ -7,6 +7,7 @@ internal class WakeWordKeyword(
   val window: Int,
   var threshold: Float,
   val patience: Int,
+  refractoryMs: Double,
 ) {
   companion object {
     fun validatedScore(output: FloatArray, name: String): Float {
@@ -15,5 +16,5 @@ internal class WakeWordKeyword(
   }
 
   var consecutive = 0
-  var lastDetection = Double.NEGATIVE_INFINITY
+  val cooldown = KeywordCooldown(refractoryMs)
 }

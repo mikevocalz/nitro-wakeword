@@ -17,7 +17,6 @@ internal class OpenWakeWordEngine(
   embeddingBytes: ByteArray,
   vadBytes: ByteArray?,
   vadThreshold: Float,
-  refractoryMs: Double,
   keywordSpecs: List<WakeWordKeywordSpec>,
 ) : AutoCloseable {
   companion object {
@@ -37,7 +36,6 @@ internal class OpenWakeWordEngine(
   private val melModel: OnnxModel
   private val embeddingModel: OnnxModel
   private val vadModel: OnnxModel?
-  private val refractorySeconds = refractoryMs / 1000.0
   private val keywords: List<WakeWordKeyword>
   private val maxWindow: Int
 
@@ -59,7 +57,7 @@ internal class OpenWakeWordEngine(
       vadModel = if (vadThreshold > 0f && vadBytes != null) openModel(vadBytes) else null
       keywords = keywordSpecs.map { spec ->
         val model = openModel(spec.bytes)
-        WakeWordKeyword(spec.keyword, model, resolveWindow(model, spec.keyword), spec.threshold, spec.patience)
+        WakeWordKeyword(spec.keyword, model, resolveWindow(model, spec.keyword), spec.threshold, spec.patience, spec.refractoryMs)
       }
       maxWindow = keywords.maxOfOrNull { it.window } ?: 16
       features = FloatArray(maxWindow * EMBEDDING_DIM)
@@ -112,7 +110,7 @@ internal class OpenWakeWordEngine(
   private fun warmUp() {
     val zeros = FloatArray(CHUNK_SIZE)
     repeat(MEL_WINDOW / 8 + maxWindow + 2) { processChunk(zeros, emit = false) }
-    keywords.forEach { it.consecutive = 0; it.lastDetection = Double.NEGATIVE_INFINITY }
+    keywords.forEach { it.consecutive = 0; it.cooldown.reset() }
     // Warmup may end on a partial VAD frame. Real capture starts with fresh VAD state.
     resetVad()
   }
@@ -196,8 +194,7 @@ internal class OpenWakeWordEngine(
       } else {
         keyword.consecutive = 0
       }
-      if (keyword.consecutive >= keyword.patience && now - keyword.lastDetection >= refractorySeconds) {
-        keyword.lastDetection = now
+      if (keyword.consecutive >= keyword.patience && keyword.cooldown.accept(now)) {
         keyword.consecutive = 0
         detections.add(WakeWordDetectionResult(keyword.keyword, score, System.currentTimeMillis().toDouble()))
       }

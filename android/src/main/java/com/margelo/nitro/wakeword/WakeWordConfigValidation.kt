@@ -7,8 +7,19 @@ internal object WakeWordConfigValidation {
     threshold(config.vadThreshold ?: 0.3, "vadThreshold")
     val refractoryMs = config.refractoryMs ?: 1000.0
     require(refractoryMs.isFinite() && refractoryMs >= 0.0) { "refractoryMs must be finite and >= 0" }
+    config.baseModels?.let { bases ->
+      for (asset in listOfNotNull(bases.melspectrogram, bases.embedding, bases.vad)) {
+        require(asset.model.isNotBlank()) { "Base model must be a nonempty local reference" }
+        ModelReference.localFile(asset.model)
+        ModelIntegrity.validateDigest(asset.sha256)
+      }
+    }
     val keywords = HashSet<String>()
     for (model in config.models) {
+      ModelReference.localFile(model.model)
+      ModelIntegrity.validateDigest(model.sha256)
+      val cooldown = model.refractoryMs ?: refractoryMs
+      require(cooldown.isFinite() && cooldown >= 0.0) { "model.refractoryMs must be finite and >= 0" }
       require(model.model.isNotBlank()) { "model must be a nonempty model reference" }
       val keyword = model.keyword ?: ModelResolver.defaultKeyword(model.model)
       require(keyword.isNotBlank()) { "keyword must be nonempty" }

@@ -7,15 +7,16 @@ final class KeywordClassifier {
   let window: Int
   var threshold: Float
   let patience: Int
+  let cooldown: KeywordCooldown
   var consecutive = 0
-  var lastDetectionUptimeS: Double = -.infinity
 
-  init(keyword: String, model: OnnxModel, window: Int, threshold: Float, patience: Int) {
+  init(keyword: String, model: OnnxModel, window: Int, threshold: Float, patience: Int, refractoryMs: Double) throws {
     self.keyword = keyword
     self.model = model
     self.window = window
     self.threshold = threshold
     self.patience = patience
+    self.cooldown = try KeywordCooldown(milliseconds: refractoryMs)
   }
 
   static func validatedScore(_ output: [Float], name: String) throws -> Float {
