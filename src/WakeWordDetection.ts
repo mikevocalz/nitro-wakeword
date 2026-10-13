@@ -1,6 +1,4 @@
-import type {WakeWordSession} from './WakeWordSession';
-
-/** A classifier detection delivered by {@linkcode WakeWordSession.setDetectionListener}. */
+/** A classifier detection delivered by `WakeWordSession.setDetectionListener`. */
 export interface WakeWordDetection {
   /** Keyword label supplied by the model configuration or derived from its file name. */
   keyword: string;

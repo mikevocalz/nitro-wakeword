@@ -1,7 +1,6 @@
-import type {createWakeWord} from './createWakeWord';
 import type {WakeWordModel} from './WakeWordModel';
 
-/** Model and capture options for {@linkcode createWakeWord}. */
+/** Model and capture options for `createWakeWord`. */
 export interface WakeWordConfig {
   /** Classifiers to load. Requires at least one model with a unique keyword. */
   models: WakeWordModel[];

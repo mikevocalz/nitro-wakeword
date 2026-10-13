@@ -1,6 +1,4 @@
-import type {WakeWordConfig} from './WakeWordConfig';
-
-/** One app-supplied classifier in {@linkcode WakeWordConfig.models}. */
+/** One app-supplied classifier in `WakeWordConfig.models`. */
 export interface WakeWordModel {
   /**
    * Absolute file path, local `file://` URI, or app-bundled model file name.

@@ -10,7 +10,9 @@
       "types": "./lib/typescript/src/index.d.ts",
       "default": "./lib/module/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js"
   },
   "files": [
     "src",
@@ -40,7 +42,7 @@
     "build": "bob build",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "nitrogen": "nitrogen",
-    "plugin:check": "node -e \"require('./app.plugin.js')\"",
+    "plugin:check": "node -e \"require('@expo/config-plugins/build/utils/plugin-resolver').resolveConfigPluginFunction(process.cwd(), 'nitro-wakeword')\"",
     "test": "jest --runInBand",
     "typecheck": "tsc --noEmit",
     "prepack": "bob build"

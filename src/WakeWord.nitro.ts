@@ -1,9 +1,8 @@
 import type {HybridObject} from 'react-native-nitro-modules';
 import type {WakeWordConfig} from './WakeWordConfig';
 import type {WakeWordDetection} from './WakeWordDetection';
-import type {WakeWordSession} from './WakeWordSession';
 
-/** Native construction contract behind {@linkcode WakeWordSession}. @internal */
+/** Native construction contract behind `WakeWordSession`. @internal */
 export interface WakeWord extends HybridObject<{
   ios: 'swift';
   android: 'kotlin';

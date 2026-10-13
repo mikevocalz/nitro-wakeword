@@ -3,7 +3,30 @@
 This draft is not ready to merge or release. JavaScript tests and generated
 bindings cannot prove native audio behavior.
 
-## Recorded source-stage results
+## Host validation on October 13, 2026
+
+- Passed: `npm test`, 29 cases across three suites. These cover factory creation,
+  setup failure/cleanup, API signatures, plugin options/resource copying, and
+  package-name resolution through Expo's real plugin resolver.
+- Passed: `npm run lint`, `npm run typecheck`, `npm run plugin:check`, and
+  `npm run build` (Bob JavaScript compilation, declarations, and Nitrogen).
+- Passed: generated bindings match the committed files after the build.
+- Passed: `npm pack --dry-run --ignore-scripts` lists 133 files, including built
+  entry points, native source/bindings, and license notices. No model weights,
+  test files, or local build artifacts are included. A copy of those package
+  files loads its plugin through Expo's resolver from a separate host directory.
+
+The first lint run found five imports used only by documentation links. Removing
+those imports fixed lint without weakening its rules. An Expo resolution
+regression then reproduced a fallback to the native runtime entry point;
+exporting both plugin subpaths fixed it. `plugin:check` now resolves the package
+name instead of importing a relative file directly.
+
+The foundation workflow runs the host checks on pull requests and foundation/main
+pushes. Its results must be checked on the published commit; a local pass is not a
+CI result.
+
+## Earlier source-stage results
 
 On October 12, 2026:
 
@@ -16,8 +39,7 @@ On October 12, 2026:
   against explicit Android/ONNX/Nitro stubs and cached coroutines 1.8.0. This
   does not validate the Android SDK, actual dependency APIs, Gradle, linking,
   or the declared Kotlin 2.1.20/coroutines 1.10.2 build combination.
-- Not run: Jest runtime suites, ESLint configuration execution, full Bob build,
-  native platform builds, Expo prebuild, and physical-device tests.
+- Native platform builds, Expo prebuild, and physical-device tests remain unrun.
 
 Source review fixed unsafe iOS ONNX metadata lifetime/type interpretation,
 native lifecycle races, model-output validation, interruption recovery, URI
@@ -31,8 +53,9 @@ The initial source/compiler review checks independent factory creation,
 readiness/error cleanup, Promise-returning lifecycle signatures, model input
 types, plugin opt-in behavior, and generated Swift/Kotlin/C++ contracts.
 
-Factory tests mock only the external Nitro runtime. Plugin tests mock Expo mod
-registration. They do not execute ONNX inference or microphone hardware.
+Factory tests mock only the external Nitro runtime. Plugin option tests mock Expo
+mod registration; the package-resolution tests use the installed Expo resolver.
+These checks do not execute ONNX inference or microphone hardware.
 
 ## Dependency audit
 
