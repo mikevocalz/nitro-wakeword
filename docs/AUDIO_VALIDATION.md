@@ -17,6 +17,10 @@ This slice builds on foundation PR #2. It keeps the same public session API.
 - Tap-buffer overflow, failed buffer copies and in-stream format changes reset
   inference before the next accepted audio, rather than joining noncontiguous
   samples into one classifier window.
+- Swift conversion honors each requested input frame count, advances a per-buffer
+  offset, and drains available output. Giving the converter 48,000 frames when it
+  requested 4,096 produced only 11 complete chunks in the one-second fixture;
+  bounded input slices restore 12 without changing the test expectation.
 - Swift normalized PCM maps to the same signed-int16 scale as Android capture.
 
 The VAD history still spans 12 capture chunks, about 960 ms. It does not count
@@ -37,8 +41,17 @@ sources against the real iOS simulator SDK. It does not open a microphone.
 
 The Native audio checks workflow runs these suites on the available hosted
 toolchains and records their versions. Check its exact commit result before
-claiming a pass. Local Kotlin execution passed; Swift and iOS SDK checks require
-the macOS CI runner because this cloud executor has no Swift/Xcode installation.
+claiming a pass. At commit `64cab104aa29aef5cc71f2df630657ed72af45ea`,
+[host CI](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38372644462)
+and [native CI](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38372644419)
+passed: 29 host tests, 28 Kotlin tests, 25 Swift tests, and iOS simulator SDK
+capture typechecking with Xcode 16.4 / Swift 6.1.2. Swift regressions cover
+irregular input boundaries, repeated buffers, channel slicing and copied
+ownership. This cloud executor has no local Swift/Xcode installation.
+
+The converter input contract follows Apple's
+[TN3136](https://developer.apple.com/documentation/technotes/tn3136-avaudioconverter-performing-sample-rate-conversions).
+The normal priming mode is unchanged; no silence is fabricated to fill a test.
 
 ## Remaining platform and model gates
 

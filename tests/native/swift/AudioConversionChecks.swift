@@ -17,34 +17,15 @@ func syntheticPCM(sampleRate: Double, channels: AVAudioChannelCount, frames: Int
 func runAudioConversionChecks() throws {
   try test("AVAudioConverter resamples 48 kHz stereo into bounded 16 kHz mono chunks") {
     let input = try syntheticPCM(sampleRate: 48000, channels: 2, frames: 48000)
-    guard let target = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 16000, channels: 1, interleaved: false),
-          let converter = AVAudioConverter(from: input.format, to: target),
-          let output = AVAudioPCMBuffer(pcmFormat: target, frameCapacity: 16032) else {
-      throw WakeWordError("Cannot allocate converter diagnostic")
-    }
-    var consumed = false
-    var requests: [AVAudioPacketCount] = []
-    var error: NSError?
-    let status = converter.convert(to: output, error: &error) { requested, inputStatus in
-      requests.append(requested)
-      guard !consumed else { inputStatus.pointee = .noDataNow; return nil }
-      consumed = true
-      inputStatus.pointee = .haveData
-      return input
-    }
-    print("DIAGNOSTIC converter status=\(status.rawValue) outputFrames=\(output.frameLength) requests=\(requests) leading=\(converter.primeInfo.leadingFrames) trailing=\(converter.primeInfo.trailingFrames) error=\(String(describing: error))")
     let stream = try AudioChunkStream(chunkSize: 1280)
     var chunks: [[Float]] = []
     try stream.process(input) { chunks.append($0) }
     let firstCount = chunks.count
-    print("DIAGNOSTIC stream first chunks=\(firstCount)")
-    for part in 1...4 {
-      let before = chunks.count
+    for _ in 1...4 {
       try stream.process(input) { chunks.append($0) }
-      print("DIAGNOSTIC stream part=\(part) chunks=\(chunks.count - before) total=\(chunks.count)")
     }
-    fflush(stdout)
     try expect(firstCount == 12, "Unexpected one-second converted frame count: \(firstCount)")
+    try expect(chunks.count == 62, "Repeated conversion drifted: \(chunks.count) chunks")
     try expect(chunks.allSatisfy { $0.count == 1280 && $0.allSatisfy(\.isFinite) }, "Invalid converted chunks")
     let peak = chunks.flatMap { $0 }.map { abs($0) }.max() ?? 0
     try expect(peak > 1000 && peak < 16000, "Resampling lost or amplified the synthetic tone")
