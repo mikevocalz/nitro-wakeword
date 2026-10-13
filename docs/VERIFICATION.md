@@ -1,7 +1,30 @@
-# Foundation verification
+# Development verification
 
-This draft is not ready to merge or release. JavaScript tests and generated
-bindings cannot prove native audio behavior.
+## Development integration decision: October 13, 2026
+
+The approved integration combines foundation #2, audio/VAD #3, local-model support
+#4, and native-host gates #13. It is a tested development baseline, not a package
+release or a claim of end-to-end wake-word behavior. No models are distributed.
+Command routing #15 and navigation #8 are outside this integration batch.
+
+The combined source at `70a35add55c9b93738eea51aee09a22c5fdb7361` passed:
+
+- [Host checks](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38380276621):
+  43 tests, lint, typecheck, Expo plugin resolution, build/codegen and package checks.
+- [Native helper and SDK checks](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38380276615):
+  35 Kotlin and 32 Swift tests, plus actual Apple SDK/ONNX header compilation.
+- [Full native builds](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38380276604):
+  Android arm64 release APK and iOS arm64 simulator Release app compiled and linked
+  with the real generated Nitro bindings. Neither app was launched.
+
+See [native host evidence](NATIVE_HOST_BUILDS.md) for the exact fixture/toolchain
+versions and dependency-audit limitations. Those results supersede the earlier
+“native builds unrun” entries below; they do not establish Expo native-host
+compatibility, microphone behavior, actual model inference, accuracy or performance.
+Those remain release/device gates. The package stays private and unpublished.
+
+The following sections retain the historical foundation-only checks, not the
+latest combined-stack test count.
 
 ## Host validation on October 13, 2026
 
@@ -39,7 +62,9 @@ On October 12, 2026:
   against explicit Android/ONNX/Nitro stubs and cached coroutines 1.8.0. This
   does not validate the Android SDK, actual dependency APIs, Gradle, linking,
   or the declared Kotlin 2.1.20/coroutines 1.10.2 build combination.
-- Native platform builds, Expo prebuild, and physical-device tests remain unrun.
+- At that source-stage checkpoint, native platform builds, Expo prebuild and
+  physical-device tests were unrun. The combined-stack build results above now
+  cover the bare native fixture; Expo prebuild and device testing remain open.
 
 Source review fixed unsafe iOS ONNX metadata lifetime/type interpretation,
 native lifecycle races, model-output validation, interruption recovery, URI
@@ -98,6 +123,7 @@ release and evaluate reachable inputs, upstream patches, and compatible updates.
 - Cold/warm latency, CPU, peak/resident memory, thermal behavior, and battery on
   named physical devices. Do not fabricate or extrapolate numbers from mocks.
 
-The current cloud executor has no Xcode, Swift compiler, Android SDK/Gradle host,
-simulator, or attached physical device. Those checks remain unrun. Reading the
-Callstack device skill is not a device test.
+Local host tooling alone did not supply the Apple/Android build evidence. The
+combined-stack native builds ran on GitHub-hosted macOS and Ubuntu runners; no
+physical device was attached or tested. Reading device guidance is not a device
+test.

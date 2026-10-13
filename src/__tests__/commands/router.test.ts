@@ -641,3 +641,71 @@ it('rejects Arabic Letter Mark in transcript text, patterns and choices', () => 
     }),
   ).toThrow();
 });
+
+it.each(['expired', 'cancelled', 'disposed'] as const)(
+  'lets app executors check %s synchronously before a side effect',
+  async stopped => {
+    let now = 0;
+    const clock = jest.spyOn(performance, 'now').mockImplementation(() => now);
+    try {
+      const sideEffect = jest.fn();
+      const command = defineCommand({
+        id: 'home',
+        patterns: ['home'],
+        slots: {},
+        requireConfirmation: false,
+        execute: (_slots, context) => {
+          context.throwIfStopped();
+          if (stopped === 'expired') now = 11;
+          else if (stopped === 'disposed') router.dispose();
+          else router.cancelAll();
+          context.throwIfStopped();
+          sideEffect();
+        },
+      });
+      const router = createCommandRouter({
+        commands: [command],
+        authorize: () => true,
+        maxAgeMs: 10,
+      });
+      const match = router.match('home');
+      if (match.status !== 'matched') throw new Error('Expected match');
+      expect(await router.dispatch(match.candidate)).toEqual({status: stopped});
+      expect(sideEffect).not.toHaveBeenCalled();
+    } finally {
+      clock.mockRestore();
+    }
+  },
+);
+
+it('checks the exact deadline after an executor await before the timer can fire', async () => {
+  let now = 0;
+  const clock = jest.spyOn(performance, 'now').mockImplementation(() => now);
+  try {
+    const sideEffect = jest.fn();
+    const command = defineCommand({
+      id: 'home',
+      patterns: ['home'],
+      slots: {},
+      requireConfirmation: false,
+      execute: async (_slots, context) => {
+        await Promise.resolve();
+        now = 11;
+        expect(context.signal.aborted).toBe(false);
+        context.throwIfStopped();
+        sideEffect();
+      },
+    });
+    const router = createCommandRouter({
+      commands: [command],
+      authorize: () => true,
+      maxAgeMs: 10,
+    });
+    const match = router.match('home');
+    if (match.status !== 'matched') throw new Error('Expected match');
+    expect(await router.dispatch(match.candidate)).toEqual({status: 'expired'});
+    expect(sideEffect).not.toHaveBeenCalled();
+  } finally {
+    clock.mockRestore();
+  }
+});

@@ -15,8 +15,8 @@ const openTab = defineCommand({
   patterns: ['open :tab', 'show :tab'],
   slots: {tab: {kind: 'choice', values: ['home', 'saved']}},
   requireConfirmation: false,
-  execute: ({tab}, {signal}) => {
-    if (signal.aborted) return;
+  execute: ({tab}, {throwIfStopped}) => {
+    throwIfStopped();
     // tab has type 'home' | 'saved'. The app owns this route mapping.
     selectAppTab(tab);
   },
@@ -117,9 +117,13 @@ expiry stop waiting even if an app callback never settles. They are checked
 around every async boundary; a late approval cannot dispatch a stale action.
 
 App callbacks receive an `AbortSignal` and must stop their own work when it is
-aborted. Once an execute callback has started, cancellation cannot undo its
-side effects. The router's `cancelled`, `expired` or `disposed` result must not be
-interpreted as rollback. Cancellation releases the router's dispatch slot even
+aborted. Call `context.throwIfStopped()` immediately before a side effect,
+especially after an `await`: it checks the exact monotonic deadline even when the
+expiry timer has not run yet, as well as cancellation and disposal. Let that
+exception propagate to dispatch so it can return the corresponding stop status.
+Once an execute callback has started, cancellation cannot undo its side effects.
+The router's `cancelled`, `expired` or `disposed` result must not be interpreted as
+rollback. Cancellation releases the router's dispatch slot even
 if the old callback ignores its signal and keeps running; a later dispatch can
 then overlap that ignored work. Apps needing underlying-operation mutual
 exclusion must enforce it in their handlers. App-level permission checks and

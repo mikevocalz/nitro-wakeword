@@ -85,7 +85,6 @@ export function createCommandRouter(
       record.used = true;
       const controller = new AbortController();
       active = controller;
-      const context = Object.freeze({signal: controller.signal});
       let expired = false;
       let timeout: ReturnType<typeof setTimeout>;
       const expireWhenDue = (): void => {
@@ -111,6 +110,10 @@ export function createCommandRouter(
         }
         if (controller.signal.aborted) throw new CommandStopped('cancelled');
       };
+      const context = Object.freeze({
+        signal: controller.signal,
+        throwIfStopped: ensureActive,
+      });
       async function wait<T>(callback: () => T | Promise<T>): Promise<T> {
         const result = await waitForCommandCallback(() => {
           ensureActive();
