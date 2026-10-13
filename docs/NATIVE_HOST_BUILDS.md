@@ -48,6 +48,15 @@ Expo prebuild/native integration remains a separate compatibility gate.
 
 ## Verified build evidence
 
+The final tested source for the approved #2 → #3 → #4 → #13 development batch is
+`70a35add55c9b93738eea51aee09a22c5fdb7361`. Both platform jobs in
+[run 38380276604](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38380276604)
+passed after committing the actual tested Podfile.lock and enabling CocoaPods
+deployment mode. This covers the cumulative source stack; it does not retroactively
+claim that each earlier intermediate commit was independently fully linked.
+
+The earlier successful run below records the fixture and artifact details.
+
 On 2026-10-13, [run 38378916057](https://github.com/mikevocalz/nitro-wakeword/actions/runs/38378916057)
 passed both full native builds for PR head `589ebd0b6cfbe117b50abc9ba8b38ee4b133d80a`
 (merge checkout `003ed6c33a546cb3055727364930ea62329ef67d`).
