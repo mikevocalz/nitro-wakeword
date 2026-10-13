@@ -27,6 +27,11 @@
       "source": "./src/navigation/reactNavigation.ts",
       "types": "./lib/typescript/src/navigation/reactNavigation.d.ts",
       "default": "./lib/module/navigation/reactNavigation.js"
+    },
+    "./search": {
+      "source": "./src/search/index.ts",
+      "types": "./lib/typescript/src/search/index.d.ts",
+      "default": "./lib/module/search/index.js"
     }
   },
   "files": [
