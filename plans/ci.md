@@ -11,7 +11,8 @@ foundation,audio-vad,stt,tts,ux
 The draft adds a bare React Native host and CI compile/link gates for Android
 arm64 and the iOS arm64 simulator. It consumes the real local Nitro package,
 generated bindings and ONNX dependencies. Earlier helper tests remain separate.
-Exact-head native results are required before declaring the gates passed.
+Both native builds passed at `589ebd0` on 2026-10-13; see
+`docs/NATIVE_HOST_BUILDS.md` for exact toolchain and run evidence.
 Simulator execution, physical audio, Expo prebuild, model accuracy, SBOM/license
 review and performance measurements remain open.
 

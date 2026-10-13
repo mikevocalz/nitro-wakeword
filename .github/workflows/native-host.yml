@@ -13,7 +13,7 @@ on:
       - 'scripts/build-native-host.sh'
       - '.github/workflows/native-host.yml'
   push:
-    branches: [plan/ci]
+    branches: [main]
 
 permissions:
   contents: read

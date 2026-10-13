@@ -37,7 +37,7 @@ case "$platform" in
     xcodebuild -version | tee -a "$logs/build-metadata.log"
     pod --version | tee -a "$logs/build-metadata.log"
     cd ios
-    RCT_NEW_ARCH_ENABLED=1 pod install > "$logs/pod-install.log" 2>&1 || {
+    RCT_NEW_ARCH_ENABLED=1 pod install --deployment > "$logs/pod-install.log" 2>&1 || {
       tail -200 "$logs/pod-install.log"
       exit 1
     }
